@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e63946"/>
+      <stop offset="100%" stop-color="#b51726"/>
+    </linearGradient>
+    <linearGradient id="bunTop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffb703"/>
+      <stop offset="100%" stop-color="#fb8500"/>
+    </linearGradient>
+    <linearGradient id="patty" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6f1d1b"/>
+      <stop offset="100%" stop-color="#431407"/>
+    </linearGradient>
+    <linearGradient id="egg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffe6a7"/>
+      <stop offset="100%" stop-color="#e0a96d"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background rounded rect -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  
+  <!-- Outer subtle glow circle -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="8"/>
+  
+  <!-- Shop Title Banner -->
+  <text x="256" y="95" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="#ffffff" letter-spacing="2">A-ONE</text>
+  <text x="256" y="132" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="22" fill="#ffd166" letter-spacing="4">BUN KABAB</text>
+
+  <!-- Bun Kabab Illustration -->
+  <g transform="translate(0, 15)">
+    <!-- Top Bun -->
+    <path d="M 140 230 C 140 165 372 165 372 230 C 372 240 140 240 140 230 Z" fill="url(#bunTop)"/>
+    <!-- Sesame Seeds -->
+    <ellipse cx="200" cy="195" rx="5" ry="3" fill="#fff" transform="rotate(-15 200 195)"/>
+    <ellipse cx="250" cy="180" rx="5" ry="3" fill="#fff"/>
+    <ellipse cx="305" cy="192" rx="5" ry="3" fill="#fff" transform="rotate(20 305 192)"/>
+    <ellipse cx="225" cy="212" rx="5" ry="3" fill="#fff" transform="rotate(10 225 212)"/>
+    <ellipse cx="280" cy="210" rx="5" ry="3" fill="#fff" transform="rotate(-10 280 210)"/>
+
+    <!-- Onion Ring / Chutney layer (Green spicy chutney) -->
+    <path d="M 148 244 Q 180 252 220 242 T 290 250 T 364 242 L 360 256 Q 300 262 256 254 T 152 258 Z" fill="#2d6a4f"/>
+    <!-- Special Egg Omelette fluffy layer (characteristic of Pakistani Bun Kabab) -->
+    <path d="M 132 256 Q 165 272 210 258 Q 260 274 310 260 Q 355 275 380 258 L 375 274 Q 330 288 280 276 Q 230 290 180 276 L 132 256 Z" fill="url(#egg)"/>
+    <!-- Shami Kabab Patty (Daal/Beef) -->
+    <rect x="144" y="274" width="224" height="34" rx="14" fill="url(#patty)"/>
+
+    <!-- Bottom Bun -->
+    <path d="M 148 312 L 364 312 C 364 336 340 354 256 354 C 172 354 148 336 148 312 Z" fill="url(#bunTop)"/>
+  </g>
+
+  <!-- POS Tag Badge -->
+  <rect x="156" y="405" width="200" height="48" rx="24" fill="#ffffff"/>
+  <text x="256" y="438" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="24" fill="#e63946" letter-spacing="1">⚡ POS SYSTEM</text>
+</svg>

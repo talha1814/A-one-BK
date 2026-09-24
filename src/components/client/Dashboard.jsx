@@ -9,6 +9,8 @@ import {
   CalendarDays,
   Plus,
   CheckCircle2,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   BarChart,
@@ -32,7 +34,7 @@ import {
 import { PRODUCT, PRODUCTS, CUSTOMER_TYPES } from '../../constants';
 import { calculateProductStats } from '../../utils/storage';
 
-export default function Dashboard({ orders, onReprintOrder, onSaveOrder }) {
+export default function Dashboard({ orders, onReprintOrder, onSaveOrder, onClearSales }) {
   const [selectedDateStr, setSelectedDateStr] = useState(
     format(new Date(), 'yyyy-MM-dd')
   );
@@ -40,8 +42,19 @@ export default function Dashboard({ orders, onReprintOrder, onSaveOrder }) {
   const [quickCustType, setQuickCustType] = useState(CUSTOMER_TYPES.WALKIN);
   const [quickFeedback, setQuickFeedback] = useState(null);
   const [isSavingQuick, setIsSavingQuick] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [clearSuccessToast, setClearSuccessToast] = useState(false);
 
   const now = new Date();
+
+  const handleConfirmClear = () => {
+    if (onClearSales) {
+      onClearSales();
+      setShowClearConfirm(false);
+      setClearSuccessToast(true);
+      setTimeout(() => setClearSuccessToast(false), 4000);
+    }
+  };
 
   // 0. Product-wise tracking (Rs 80, Rs 100, Rs 150)
   const targetOrdersForProductStats = useMemo(() => {
@@ -313,11 +326,86 @@ export default function Dashboard({ orders, onReprintOrder, onSaveOrder }) {
             Live Bun Kabab sales with Walk-in vs Food Panda breakdown
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs font-bold text-stone-600 bg-white px-3 py-1.5 rounded-xl border border-stone-200 shadow-xs self-start">
-          <Clock className="w-3.5 h-3.5 text-stone-500" />
-          <span>Updated: {format(now, 'hh:mm a')}</span>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-center">
+          <div className="flex items-center gap-2 text-xs font-bold text-stone-600 bg-white px-3 py-2 rounded-xl border border-stone-200 shadow-xs">
+            <Clock className="w-3.5 h-3.5 text-stone-500" />
+            <span>Updated: {format(now, 'hh:mm a')}</span>
+          </div>
+
+          {/* Clear All Sales Button */}
+          {onClearSales && (
+            <button
+              type="button"
+              onClick={() => setShowClearConfirm(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-rose-50 text-stone-600 hover:text-rose-700 text-xs font-bold border border-stone-200 hover:border-rose-300 shadow-xs transition active:scale-95 cursor-pointer"
+              title="Clear all sales and start fresh"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+              <span>Clear All Sales</span>
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Toast Notification when sales are cleared */}
+      {clearSuccessToast && (
+        <div className="bg-stone-900 text-white p-4 rounded-2xl shadow-xl flex items-center justify-between border border-stone-800 animate-in fade-in slide-in-from-top-4 duration-200">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-extrabold text-sm text-white">All Sales Cleared Successfully!</p>
+              <p className="text-xs text-stone-400">Dashboard has been reset to 0. You can now start new sales entries.</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setClearSuccessToast(false)}
+            className="text-stone-400 hover:text-white text-xs font-bold px-2 py-1"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Confirmation Modal for Clearing All Sales */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200 p-6 space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-6 h-6 stroke-[2.5]" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-stone-900">Clear All Sales Data?</h3>
+                <p className="text-xs text-stone-500">Reset dashboard counter and start fresh</p>
+              </div>
+            </div>
+
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed bg-stone-50 p-3.5 rounded-2xl border border-stone-200/80">
+              Kya aap waqai tamam sales data clear karna chahte hain? Dashboard par mojood tamam sales reset ho kar <strong>0</strong> ho jayengi aur software naye sirey se (fresh start) shuru hoga.
+            </p>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowClearConfirm(false)}
+                className="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold transition cursor-pointer"
+              >
+                Cancel / Wapis
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmClear}
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 active:scale-95 text-white text-xs font-black shadow-md shadow-rose-200 transition cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Yes, Clear All Sales</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* A) TODAY'S SUMMARY CARDS */}
       <section className="space-y-3">

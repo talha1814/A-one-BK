@@ -10,7 +10,7 @@ import History from './History';
 import BottomNav from './BottomNav';
 import Receipt from './Receipt';
 import InstallButton from './InstallButton';
-import { loadPosData, saveOrder, markOrderPrinted } from '../../utils/storage';
+import { loadPosData, saveOrder, markOrderPrinted, clearClientOrders } from '../../utils/storage';
 import { triggerPrint, playBeepSound } from '../../utils/printer';
 import { LogOut, Store, RefreshCw } from 'lucide-react';
 
@@ -98,6 +98,12 @@ export default function ClientGate() {
 
   const handleRefreshOrders = () => {
     setPosData(loadPosData(clientId));
+  };
+
+  const handleClearAllSales = () => {
+    const blank = clearClientOrders(clientId);
+    setPosData(blank);
+    return blank;
   };
 
   // State guards
@@ -216,6 +222,7 @@ export default function ClientGate() {
             orders={posData.orders || []}
             onReprintOrder={handleReprintOrder}
             onSaveOrder={handleSaveOrder}
+            onClearSales={handleClearAllSales}
           />
         )}
 

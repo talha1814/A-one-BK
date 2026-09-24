@@ -328,7 +328,7 @@ export function resetToDemoData(clientId) {
 
 // Clear sales for a specific client (leaves client account intact)
 export function clearClientOrders(clientId) {
-  const key = `aone_orders_${clientId}`;
+  const key = getClientStorageKey(clientId);
   const blankData = {
     orders: [],
     orderCounter: 1,

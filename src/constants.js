@@ -6,6 +6,36 @@ export const PRODUCT = {
   description: 'Authentic Daal & Shami patty with fluffy spiced egg, crisp onions, tangy tamarind & mint chutney in toasted golden buns.',
 };
 
+export const PRODUCTS = [
+  {
+    id: 'bun-kabab-80',
+    name: 'Bun Kabab Rs: 80/-',
+    shortName: 'Bun Kabab (Rs 80)',
+    price: 80,
+    currency: 'Rs',
+    tag: 'Classic',
+    description: 'Authentic Daal & Shami patty with fluffy spiced egg, crisp onions, tangy tamarind & mint chutney.',
+  },
+  {
+    id: 'bun-kabab-100',
+    name: 'Bun Kabab Rs: 100/-',
+    shortName: 'Bun Kabab (Rs 100)',
+    price: 100,
+    currency: 'Rs',
+    tag: 'Special',
+    description: 'Special Bun Kabab with premium spiced egg patty & extra flavorful toppings.',
+  },
+  {
+    id: 'bun-kabab-150',
+    name: 'Bun Kabab Rs: 150/-',
+    shortName: 'Bun Kabab (Rs 150)',
+    price: 150,
+    currency: 'Rs',
+    tag: 'Jumbo Royal',
+    description: 'Jumbo Royal Bun Kabab with double patty, extra egg & signature secret chutney.',
+  },
+];
+
 export const CUSTOMER_TYPES = {
   WALKIN: 'walkin',
   FOODPANDA: 'foodpanda',

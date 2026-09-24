@@ -49,10 +49,19 @@ export default function Receipt({ order, isPreview = false }) {
       <p className="text-center">----------------------------</p>
 
       <div className="py-1">
-        <div className="flex justify-between font-bold">
-          <span>Bun Kabab   x {item.qty}</span>
-          <span>Rs {order.total}</span>
-        </div>
+        {order.items && order.items.length > 0 ? (
+          order.items.map((it, idx) => (
+            <div key={idx} className="flex justify-between font-bold">
+              <span>{(it.name || 'Bun Kabab').slice(0, 15)} x {it.qty}</span>
+              <span>Rs {it.qty * it.price}</span>
+            </div>
+          ))
+        ) : (
+          <div className="flex justify-between font-bold">
+            <span>Bun Kabab   x {item.qty}</span>
+            <span>Rs {order.total}</span>
+          </div>
+        )}
       </div>
 
       <p className="text-center">----------------------------</p>

@@ -1,4 +1,4 @@
-import { PRODUCT, CUSTOMER_TYPES } from '../constants';
+import { PRODUCT, PRODUCTS, CUSTOMER_TYPES } from '../constants';
 import { subDays, format, subMinutes } from 'date-fns';
 
 // Helper to determine per-client storage key
@@ -113,23 +113,155 @@ export function savePosData(data, clientId) {
   }
 }
 
-export function saveOrder({ customerType, qty, printed = false }, clientId) {
+export function calculateProductStats(ordersList = []) {
+  const stats = {
+    'bun-kabab-80': {
+      id: 'bun-kabab-80',
+      name: 'Bun Kabab Rs: 80/-',
+      shortName: 'Bun Kabab (Rs 80)',
+      price: 80,
+      tag: 'Classic',
+      qtySold: 0,
+      totalEarning: 0,
+      walkinQty: 0,
+      walkinEarning: 0,
+      foodpandaQty: 0,
+      foodpandaEarning: 0,
+    },
+    'bun-kabab-100': {
+      id: 'bun-kabab-100',
+      name: 'Bun Kabab Rs: 100/-',
+      shortName: 'Bun Kabab (Rs 100)',
+      price: 100,
+      tag: 'Special',
+      qtySold: 0,
+      totalEarning: 0,
+      walkinQty: 0,
+      walkinEarning: 0,
+      foodpandaQty: 0,
+      foodpandaEarning: 0,
+    },
+    'bun-kabab-150': {
+      id: 'bun-kabab-150',
+      name: 'Bun Kabab Rs: 150/-',
+      shortName: 'Bun Kabab (Rs 150)',
+      price: 150,
+      tag: 'Jumbo Royal',
+      qtySold: 0,
+      totalEarning: 0,
+      walkinQty: 0,
+      walkinEarning: 0,
+      foodpandaQty: 0,
+      foodpandaEarning: 0,
+    },
+  };
+
+  ordersList.forEach((order) => {
+    const isFoodPanda = order.customerType === CUSTOMER_TYPES.FOODPANDA;
+    const items =
+      order.items && order.items.length > 0
+        ? order.items
+        : [{ name: PRODUCT.name, qty: 1, price: order.total || PRODUCT.price }];
+
+    items.forEach((item) => {
+      const qty = Number(item.qty) || 1;
+      const price = Number(item.price) || 80;
+      let prodKey = 'bun-kabab-80';
+
+      if (
+        item.productId === 'bun-kabab-150' ||
+        price === 150 ||
+        (item.name && item.name.includes('150'))
+      ) {
+        prodKey = 'bun-kabab-150';
+      } else if (
+        item.productId === 'bun-kabab-100' ||
+        price === 100 ||
+        (item.name && item.name.includes('100'))
+      ) {
+        prodKey = 'bun-kabab-100';
+      } else {
+        prodKey = 'bun-kabab-80';
+      }
+
+      const earning = qty * price;
+      stats[prodKey].qtySold += qty;
+      stats[prodKey].totalEarning += earning;
+
+      if (isFoodPanda) {
+        stats[prodKey].foodpandaQty += qty;
+        stats[prodKey].foodpandaEarning += earning;
+      } else {
+        stats[prodKey].walkinQty += qty;
+        stats[prodKey].walkinEarning += earning;
+      }
+    });
+  });
+
+  const totalQuantity =
+    stats['bun-kabab-80'].qtySold +
+    stats['bun-kabab-100'].qtySold +
+    stats['bun-kabab-150'].qtySold;
+
+  const totalEarning =
+    stats['bun-kabab-80'].totalEarning +
+    stats['bun-kabab-100'].totalEarning +
+    stats['bun-kabab-150'].totalEarning;
+
+  return {
+    byProduct: stats,
+    productsList: [
+      stats['bun-kabab-80'],
+      stats['bun-kabab-100'],
+      stats['bun-kabab-150'],
+    ],
+    combined: {
+      totalQuantity,
+      totalEarning,
+    },
+  };
+}
+
+export function saveOrder(
+  { customerType, qty = 1, product = PRODUCT, items, printed = false },
+  clientId
+) {
   const currentData = loadPosData(clientId);
   const counter = currentData.orderCounter || 1;
   const orderId = `ORD-${String(counter).padStart(3, '0')}`;
-  const total = qty * PRODUCT.price;
+
+  const targetProduct = product || PRODUCT;
+  const unitPrice = Number(targetProduct.price) || PRODUCT.price;
+  const productName = targetProduct.name || PRODUCT.name;
+  const productId =
+    targetProduct.id ||
+    (unitPrice === 150
+      ? 'bun-kabab-150'
+      : unitPrice === 100
+      ? 'bun-kabab-100'
+      : 'bun-kabab-80');
+
+  const orderItems = items || [
+    {
+      productId,
+      name: productName,
+      qty: Number(qty),
+      price: unitPrice,
+    },
+  ];
+
+  const total = items
+    ? items.reduce(
+        (sum, it) => sum + Number(it.qty || 1) * Number(it.price || 80),
+        0
+      )
+    : Number(qty) * unitPrice;
 
   const newOrder = {
     id: orderId,
     timestamp: new Date().toISOString(),
     customerType: customerType || CUSTOMER_TYPES.WALKIN,
-    items: [
-      {
-        name: PRODUCT.name,
-        qty: Number(qty),
-        price: PRODUCT.price,
-      },
-    ],
+    items: orderItems,
     total,
     printed: Boolean(printed),
   };

@@ -206,7 +206,7 @@ export default function History({ orders, onReprintOrder, onRefreshOrders }) {
         ) : (
           paginatedOrders.map((order) => {
             const isFoodPanda = order.customerType === CUSTOMER_TYPES.FOODPANDA;
-            const item = order.items?.[0] || { qty: 1, price: 80 };
+            const item = order.items?.[0] || { name: 'Bun Kabab', qty: 1, price: 80 };
             const timeFormatted = format(new Date(order.timestamp), 'dd MMM yyyy, hh:mm a');
 
             return (
@@ -241,7 +241,9 @@ export default function History({ orders, onReprintOrder, onRefreshOrders }) {
                       <span>{timeFormatted}</span>
                       <span>•</span>
                       <span className="font-semibold text-stone-700">
-                        {item.qty}x Bun Kabab (@ Rs {item.price})
+                        {order.items && order.items.length > 0
+                          ? order.items.map((it) => `${it.qty}x ${it.name || 'Bun Kabab'} (@ Rs ${it.price})`).join(', ')
+                          : `${item.qty}x ${item.name || 'Bun Kabab'} (@ Rs ${item.price})`}
                       </span>
                     </div>
                   </div>

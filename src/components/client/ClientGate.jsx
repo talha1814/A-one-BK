@@ -75,8 +75,8 @@ export default function ClientGate() {
   }, [clientId]);
 
   // Order save handler
-  const handleSaveOrder = async ({ customerType, qty, printed }) => {
-    const { newOrder, updatedData } = saveOrder({ customerType, qty, printed }, clientId);
+  const handleSaveOrder = async ({ customerType, qty = 1, product, printed = false }) => {
+    const { newOrder, updatedData } = saveOrder({ customerType, qty, product, printed }, clientId);
     setPosData(updatedData);
 
     // Play POS confirmation beep
@@ -215,6 +215,7 @@ export default function ClientGate() {
           <Dashboard
             orders={posData.orders || []}
             onReprintOrder={handleReprintOrder}
+            onSaveOrder={handleSaveOrder}
           />
         )}
 

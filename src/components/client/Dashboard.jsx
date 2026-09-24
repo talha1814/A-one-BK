@@ -7,6 +7,8 @@ import {
   Printer,
   BarChart3,
   CalendarDays,
+  Plus,
+  CheckCircle2,
 } from 'lucide-react';
 import {
   BarChart,
@@ -27,14 +29,52 @@ import {
   eachDayOfInterval,
   isWithinInterval,
 } from 'date-fns';
-import { PRODUCT, CUSTOMER_TYPES } from '../../constants';
+import { PRODUCT, PRODUCTS, CUSTOMER_TYPES } from '../../constants';
+import { calculateProductStats } from '../../utils/storage';
 
-export default function Dashboard({ orders, onReprintOrder }) {
+export default function Dashboard({ orders, onReprintOrder, onSaveOrder }) {
   const [selectedDateStr, setSelectedDateStr] = useState(
     format(new Date(), 'yyyy-MM-dd')
   );
+  const [productStatsTimeframe, setProductStatsTimeframe] = useState('today'); // 'today' | 'all'
+  const [quickCustType, setQuickCustType] = useState(CUSTOMER_TYPES.WALKIN);
+  const [quickFeedback, setQuickFeedback] = useState(null);
+  const [isSavingQuick, setIsSavingQuick] = useState(false);
 
   const now = new Date();
+
+  // 0. Product-wise tracking (Rs 80, Rs 100, Rs 150)
+  const targetOrdersForProductStats = useMemo(() => {
+    if (productStatsTimeframe === 'all') return orders;
+    return orders.filter((o) => isSameDay(new Date(o.timestamp), now));
+  }, [orders, productStatsTimeframe, now]);
+
+  const productStats = useMemo(() => {
+    return calculateProductStats(targetOrdersForProductStats);
+  }, [targetOrdersForProductStats]);
+
+  const handleQuickAddSale = async (prod) => {
+    if (!onSaveOrder || isSavingQuick) return;
+    setIsSavingQuick(true);
+    try {
+      const saved = await onSaveOrder({
+        customerType: quickCustType,
+        qty: 1,
+        product: prod,
+        printed: false,
+      });
+      setQuickFeedback({
+        message: `+1 ${prod.shortName || prod.name} sale logged!`,
+        orderId: saved?.id,
+        price: prod.price,
+      });
+      setTimeout(() => setQuickFeedback(null), 3000);
+    } catch (err) {
+      console.error('Failed to log quick sale from dashboard:', err);
+    } finally {
+      setIsSavingQuick(false);
+    }
+  };
 
   // 1. Today's Calculations
   const todayMetrics = useMemo(() => {
@@ -304,7 +344,7 @@ export default function Dashboard({ orders, onReprintOrder }) {
               <span className="text-3xl font-black text-stone-900 tracking-tight">
                 {todayMetrics.totalItems} pcs
               </span>
-              <p className="text-xs text-stone-600 mt-0.5">@ Rs {PRODUCT.price} each</p>
+              <p className="text-xs text-stone-600 mt-0.5">Combined Bun Kababs</p>
             </div>
           </div>
 
@@ -383,7 +423,221 @@ export default function Dashboard({ orders, onReprintOrder }) {
         </div>
       </section>
 
-      {/* B) WEEKLY CHART (2 bars per day) */}
+      {/* B) 3 PRODUCTS SALES TRACKING & DIRECT ENTRY */}
+      <section className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs space-y-4">
+        {/* Header & Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-100">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🍔</span>
+              <h2 className="text-base sm:text-lg font-black text-stone-900">
+                Products Sales Tracking & Direct Entry
+              </h2>
+              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">
+                3 Products
+              </span>
+            </div>
+            <p className="text-xs text-stone-600">
+              Track Rs 80, Rs 100, and Rs 150 Bun Kababs separately with live +1 sales entry
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Timeframe Filter (Today vs All-Time) */}
+            <div className="flex items-center bg-stone-100 p-1 rounded-xl border border-stone-200/70 text-xs">
+              <button
+                type="button"
+                onClick={() => setProductStatsTimeframe('today')}
+                className={`px-2.5 py-1 rounded-lg font-extrabold transition cursor-pointer ${
+                  productStatsTimeframe === 'today'
+                    ? 'bg-white text-stone-900 shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                Today
+              </button>
+              <button
+                type="button"
+                onClick={() => setProductStatsTimeframe('all')}
+                className={`px-2.5 py-1 rounded-lg font-extrabold transition cursor-pointer ${
+                  productStatsTimeframe === 'all'
+                    ? 'bg-white text-stone-900 shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                All-Time
+              </button>
+            </div>
+
+            {/* Quick Sale Customer Type Toggle */}
+            <div className="flex items-center bg-stone-100 p-1 rounded-xl border border-stone-200/70 text-xs">
+              <button
+                type="button"
+                onClick={() => setQuickCustType(CUSTOMER_TYPES.WALKIN)}
+                className={`px-2 py-1 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 ${
+                  quickCustType === CUSTOMER_TYPES.WALKIN
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                Walk-in
+              </button>
+              <button
+                type="button"
+                onClick={() => setQuickCustType(CUSTOMER_TYPES.FOODPANDA)}
+                className={`px-2 py-1 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 ${
+                  quickCustType === CUSTOMER_TYPES.FOODPANDA
+                    ? 'bg-[#d70f64] text-white shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                Food Panda
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Sale Success Feedback Toast */}
+        {quickFeedback && (
+          <div className="bg-stone-900 text-white text-xs p-3 rounded-2xl flex items-center justify-between border border-stone-800 animate-in fade-in">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span className="font-extrabold">{quickFeedback.message}</span>
+              <span className="text-stone-400 text-[11px]">
+                ({quickCustType === CUSTOMER_TYPES.FOODPANDA ? 'Food Panda' : 'Walk-in'} • +Rs {quickFeedback.price})
+              </span>
+            </div>
+            <button
+              onClick={() => setQuickFeedback(null)}
+              className="text-stone-400 hover:text-white text-[11px] font-bold"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* 3 Product Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          {productStats.productsList.map((prod) => {
+            const productConstant = PRODUCTS.find((p) => p.id === prod.id) || {
+              tag: prod.tag || 'Special',
+              name: prod.name,
+              price: prod.price,
+            };
+
+            return (
+              <div
+                key={prod.id}
+                className="bg-stone-50/80 rounded-2xl border border-stone-200/90 p-4 flex flex-col justify-between hover:border-stone-300 transition shadow-xs"
+              >
+                <div>
+                  {/* Badge & Unit Price */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-stone-200 text-stone-700">
+                      {prod.tag || productConstant.tag}
+                    </span>
+                    <span className="text-sm font-black text-rose-600">
+                      Rs {prod.price} / pc
+                    </span>
+                  </div>
+
+                  {/* Product Title */}
+                  <h3 className="text-base font-black text-stone-900 mt-2">
+                    {prod.name}
+                  </h3>
+
+                  {/* Stats Block: Quantity Sold & Total Earning */}
+                  <div className="mt-3.5 grid grid-cols-2 gap-2 bg-white p-3 rounded-xl border border-stone-200/80">
+                    <div>
+                      <span className="block text-[10px] font-bold uppercase text-stone-500">
+                        Qty Sold
+                      </span>
+                      <span className="block text-2xl font-black text-stone-900 mt-0.5">
+                        {prod.qtySold} <span className="text-xs font-semibold text-stone-500">pcs</span>
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="block text-[10px] font-bold uppercase text-stone-500">
+                        Total Earning
+                      </span>
+                      <span className="block text-xl font-black text-rose-600 mt-0.5">
+                        Rs {prod.totalEarning.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Channel Breakdown */}
+                  <div className="mt-2.5 flex items-center justify-between text-[11px] text-stone-500 px-1 font-medium">
+                    <span>
+                      Walk-in: <strong className="text-emerald-700">{prod.walkinQty} pcs</strong>
+                    </span>
+                    <span>
+                      Food Panda: <strong className="text-[#d70f64]">{prod.foodpandaQty} pcs</strong>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Entry Action Button */}
+                <div className="mt-4 pt-3 border-t border-stone-200/70">
+                  <button
+                    type="button"
+                    disabled={isSavingQuick}
+                    onClick={() => handleQuickAddSale(productConstant)}
+                    className="w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 active:scale-98 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-xs transition cursor-pointer disabled:opacity-50"
+                  >
+                    <Plus className="w-4 h-4 stroke-[3]" />
+                    <span>+1 Sale (Rs {prod.price})</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* COMBINED TOTAL SALE & COMBINED TOTAL EARNING BANNER */}
+        <div className="bg-stone-900 text-white rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-stone-800 shadow-md">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl shrink-0">
+              📊
+            </div>
+            <div>
+              <span className="text-[11px] font-black uppercase tracking-wider text-amber-400 block">
+                All 3 Products Combined Summary ({productStatsTimeframe === 'today' ? 'Today' : 'All-Time'})
+              </span>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-1 mt-1">
+                <div>
+                  <span className="text-xs text-stone-400 block">Combined Total Sale:</span>
+                  <span className="text-2xl font-black text-white">
+                    {productStats.combined.totalQuantity} <span className="text-xs font-normal text-stone-400">pcs</span>
+                  </span>
+                </div>
+                <div className="hidden sm:block h-8 w-px bg-stone-700" />
+                <div>
+                  <span className="text-xs text-stone-400 block">Combined Total Earning:</span>
+                  <span className="text-2xl font-black text-amber-400">
+                    Rs {productStats.combined.totalEarning.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mini product share badges */}
+          <div className="flex flex-wrap sm:flex-col gap-1.5 sm:text-right border-t sm:border-0 border-stone-800 pt-2 sm:pt-0">
+            <span className="text-[11px] text-stone-300">
+              Rs 80: <strong className="text-white">{productStats.byProduct['bun-kabab-80'].qtySold} pcs</strong> (Rs {productStats.byProduct['bun-kabab-80'].totalEarning.toLocaleString()})
+            </span>
+            <span className="text-[11px] text-stone-300">
+              Rs 100: <strong className="text-white">{productStats.byProduct['bun-kabab-100'].qtySold} pcs</strong> (Rs {productStats.byProduct['bun-kabab-100'].totalEarning.toLocaleString()})
+            </span>
+            <span className="text-[11px] text-stone-300">
+              Rs 150: <strong className="text-white">{productStats.byProduct['bun-kabab-150'].qtySold} pcs</strong> (Rs {productStats.byProduct['bun-kabab-150'].totalEarning.toLocaleString()})
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* C) WEEKLY CHART (2 bars per day) */}
       <section className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-stone-100">
           <div>
@@ -514,7 +768,7 @@ export default function Dashboard({ orders, onReprintOrder }) {
         <div className="divide-y divide-stone-100">
           {recentOrders.map((order) => {
             const isFoodPanda = order.customerType === CUSTOMER_TYPES.FOODPANDA;
-            const item = order.items?.[0] || { qty: 1 };
+            const item = order.items?.[0] || { name: 'Bun Kabab', qty: 1 };
             const timeFormatted = format(new Date(order.timestamp), 'hh:mm a, d MMM');
 
             return (
@@ -530,7 +784,11 @@ export default function Dashboard({ orders, onReprintOrder }) {
                         {isFoodPanda ? 'Food Panda' : 'Walk-in'}
                       </span>
                     </div>
-                    <p className="text-xs text-stone-600 mt-0.5">{item.qty}x Bun Kabab • {timeFormatted}</p>
+                    <p className="text-xs text-stone-600 mt-0.5">
+                      {order.items && order.items.length > 0
+                        ? order.items.map((it) => `${it.qty}x ${it.name || 'Bun Kabab'}`).join(', ')
+                        : `${item.qty}x Bun Kabab`} • {timeFormatted}
+                    </p>
                   </div>
                 </div>
 

@@ -65,7 +65,7 @@ export class BluetoothThermalPrinter {
       throw new Error('Bluetooth printer not connected');
     }
 
-    const item = order.items && order.items[0] ? order.items[0] : { name: 'Bun Kabab', qty: 1, price: 80 };
+    const items = order.items && order.items.length > 0 ? order.items : [{ name: 'Bun Kabab', qty: 1, price: 80 }];
     const dateFormatted = format(new Date(order.timestamp), 'dd/MM/yyyy hh:mm a');
     const custTypeLabel = order.customerType === CUSTOMER_TYPES.FOODPANDA ? 'FOOD PANDA ORDER' : 'WALK-IN CUSTOMER';
 
@@ -103,9 +103,14 @@ export class BluetoothThermalPrinter {
     text('ITEM             QTY  RATE TOTAL\n');
     text('--------------------------------\n');
     
-    // Line item (58mm width ~ 32 chars)
-    const itemLine = `${item.name.padEnd(16)} ${String(item.qty).padStart(2)}  ${String(item.price).padStart(3)}  ${String(order.total).padStart(4)}\n`;
-    text(itemLine);
+    // Line items (58mm width ~ 32 chars)
+    items.forEach((it) => {
+      const name = (it.name || 'Bun Kabab').slice(0, 16).padEnd(16);
+      const q = String(it.qty).padStart(2);
+      const rate = String(it.price).padStart(4);
+      const lineTot = String(it.qty * it.price).padStart(5);
+      text(`${name} ${q} ${rate} ${lineTot}\n`);
+    });
     text('--------------------------------\n');
 
     // Total

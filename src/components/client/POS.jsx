@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { Plus, Minus, Save, Printer, Sparkles, CheckCircle2, RotateCcw, Banknote } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { PRODUCT, CUSTOMER_TYPES } from '../../constants';
+import { PRODUCT, PRODUCTS, CUSTOMER_TYPES } from '../../constants';
 import CustomerTypeToggle from './CustomerTypeToggle';
 
 export default function POS({ onSaveOrder, currentOrderNumber }) {
   const [customerType, setCustomerType] = useState(CUSTOMER_TYPES.WALKIN);
+  const [selectedProduct, setSelectedProduct] = useState(PRODUCTS ? PRODUCTS[0] : PRODUCT);
   const [qty, setQty] = useState(1);
   const [cashTendered, setCashTendered] = useState('');
   const [showCashHelper, setShowCashHelper] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  const total = qty * PRODUCT.price;
+  const total = qty * selectedProduct.price;
 
   const handleIncrement = () => setQty((prev) => prev + 1);
   const handleDecrement = () => setQty((prev) => (prev > 1 ? prev - 1 : 1));
@@ -45,6 +46,7 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
       const savedOrder = await onSaveOrder({
         customerType,
         qty,
+        product: selectedProduct,
         printed: shouldPrint,
       });
 
@@ -54,6 +56,7 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
         orderId: savedOrder.id,
         qty,
         total,
+        productName: selectedProduct.shortName || selectedProduct.name,
         customerType,
         printed: shouldPrint,
       });
@@ -96,7 +99,7 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
                 </span>
               </div>
               <p className="text-xs text-stone-300">
-                {lastSaved.qty}x Bun Kabab = Rs {lastSaved.total} •{' '}
+                {lastSaved.qty}x {lastSaved.productName || 'Bun Kabab'} = Rs {lastSaved.total} •{' '}
                 {lastSaved.printed ? '🖨️ Receipt Printed' : '📁 Saved to History'}
               </p>
             </div>
@@ -118,8 +121,42 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
         />
       </section>
 
-      {/* 2. Big Product Card: Bun Kabab - Rs 80 */}
+      {/* 2. Big Product Card with 3 Products Tabs */}
       <section className="bg-white rounded-3xl border border-stone-200/80 shadow-sm overflow-hidden">
+        {/* Product Selection Tabs */}
+        <div className="bg-stone-50/90 p-2 sm:p-2.5 border-b border-stone-200/80">
+          <label className="text-[10px] font-black uppercase tracking-wider text-stone-600 block px-1 pb-1.5">
+            Select Product (3 Items Available):
+          </label>
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+            {PRODUCTS.map((prod) => {
+              const isSelected = selectedProduct.id === prod.id;
+              return (
+                <button
+                  key={prod.id}
+                  type="button"
+                  onClick={() => setSelectedProduct(prod)}
+                  className={`py-2 px-2 rounded-2xl text-center transition cursor-pointer flex flex-col items-center justify-center gap-0.5 border ${
+                    isSelected
+                      ? 'bg-rose-600 text-white shadow-md shadow-rose-200 border-rose-600'
+                      : 'bg-white text-stone-700 hover:bg-stone-100/90 border-stone-200'
+                  }`}
+                >
+                  <span className={`text-[9px] font-black uppercase tracking-wider ${isSelected ? 'text-rose-100' : 'text-stone-500'}`}>
+                    {prod.tag}
+                  </span>
+                  <span className="text-xs sm:text-sm font-black leading-tight">
+                    Rs {prod.price}
+                  </span>
+                  <span className={`text-[10px] sm:text-[11px] font-bold truncate max-w-full ${isSelected ? 'text-white' : 'text-stone-600'}`}>
+                    {prod.shortName}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="p-5 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-stone-100">
             <div className="flex items-center gap-4">
@@ -129,19 +166,19 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-rose-100 text-rose-700">
-                    House Special
+                    {selectedProduct.tag || 'House Special'}
                   </span>
                   <span className="text-xs font-semibold text-stone-500">
                     Token #{String(currentOrderNumber).padStart(3, '0')}
                   </span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight mt-1">
-                  {PRODUCT.name}
+                  {selectedProduct.name}
                 </h2>
                 <div className="flex items-baseline gap-1 mt-0.5">
                   <span className="text-xs font-bold text-stone-500">Price:</span>
                   <span className="text-xl sm:text-2xl font-black text-rose-600">
-                    Rs {PRODUCT.price}
+                    Rs {selectedProduct.price}
                   </span>
                   <span className="text-xs font-medium text-stone-600">/ piece</span>
                 </div>
@@ -237,7 +274,7 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
                 Live Total
               </span>
               <p className="text-base sm:text-lg font-bold text-white">
-                <span className="text-rose-400 font-extrabold">{qty}</span> x Bun Kabab = Rs {total}
+                <span className="text-rose-400 font-extrabold">{qty}</span> x {selectedProduct.shortName || selectedProduct.name} = Rs {total}
               </p>
             </div>
           </div>

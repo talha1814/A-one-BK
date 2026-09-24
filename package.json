@@ -9,11 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.1",
     "canvas-confetti": "^1.9.4",
     "date-fns": "^4.1.0",
     "lucide-react": "^1.16.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^7.18.4",
     "recharts": "^2.15.1"
   },
   "devDependencies": {

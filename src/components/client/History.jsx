@@ -1,69 +1,50 @@
 import React, { useState, useMemo } from 'react';
 import {
   Search,
-  Filter,
   Download,
   Printer,
   User,
   Bike,
   Calendar,
-  Check,
-  RotateCcw,
   ChevronLeft,
   ChevronRight,
   Sparkles,
   Trash2,
 } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
-import { PRODUCT, CUSTOMER_TYPES, CUSTOMER_TYPE_CONFIG } from '../constants';
-import { exportOrdersToCSV, clearAllOrders, resetToDemoData } from '../utils/storage';
+import { CUSTOMER_TYPES } from '../../constants';
+import { exportOrdersToCSV, clearAllOrders, resetToDemoData } from '../../utils/storage';
 
 const ITEMS_PER_PAGE = 10;
 
-export default function HistoryScreen({ orders, onReprintOrder, onRefreshOrders }) {
-  const [filterType, setFilterType] = useState('ALL'); // 'ALL' | 'walkin' | 'foodpanda'
+export default function History({ orders, onReprintOrder, onRefreshOrders }) {
+  const [filterType, setFilterType] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [confirmClear, setConfirmClear] = useState(false);
 
-  // Filter and search
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
-      // 1. Customer Type Filter
-      if (filterType !== 'ALL' && order.customerType !== filterType) {
-        return false;
-      }
-
-      // 2. Date Filter
+      if (filterType !== 'ALL' && order.customerType !== filterType) return false;
       if (selectedDate) {
         const orderDate = new Date(order.timestamp);
         const targetDate = new Date(`${selectedDate}T00:00:00`);
-        if (!isSameDay(orderDate, targetDate)) {
-          return false;
-        }
+        if (!isSameDay(orderDate, targetDate)) return false;
       }
-
-      // 3. Search Query (matches Order ID, total amount, or customer type)
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
         const matchesId = order.id.toLowerCase().includes(q);
         const matchesTotal = String(order.total).includes(q);
-        const matchesType = (order.customerType || '').toLowerCase().includes(q);
-        if (!matchesId && !matchesTotal && !matchesType) {
-          return false;
-        }
+        if (!matchesId && !matchesTotal) return false;
       }
-
       return true;
     });
   }, [orders, filterType, selectedDate, searchQuery]);
 
-  // Pagination
   const totalPages = Math.max(1, Math.ceil(filteredOrders.length / ITEMS_PER_PAGE));
   const paginatedOrders = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredOrders.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredOrders.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredOrders, currentPage]);
 
   const handleFilterChange = (type) => {
@@ -71,15 +52,10 @@ export default function HistoryScreen({ orders, onReprintOrder, onRefreshOrders 
     setCurrentPage(1);
   };
 
-  const handleExport = () => {
-    exportOrdersToCSV(filteredOrders);
-  };
-
   const handleClearAll = () => {
-    if (window.confirm('Are you sure you want to clear all orders? This will wipe current sales history.')) {
+    if (window.confirm('Wipe current orders history?')) {
       clearAllOrders();
       onRefreshOrders();
-      setConfirmClear(false);
     }
   };
 
@@ -90,21 +66,20 @@ export default function HistoryScreen({ orders, onReprintOrder, onRefreshOrders 
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-4 sm:py-6 space-y-5 pb-24">
-      {/* Header & Export Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
             Order History
           </h1>
           <p className="text-xs sm:text-sm text-stone-600">
-            Total {orders.length} orders logged ({filteredOrders.length} matching filters)
+            Total {orders.length} orders recorded ({filteredOrders.length} filtered)
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={handleExport}
+            onClick={() => exportOrdersToCSV(filteredOrders)}
             className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
           >
             <Download className="w-4 h-4" />
@@ -134,7 +109,6 @@ export default function HistoryScreen({ orders, onReprintOrder, onRefreshOrders 
 
       {/* Filter and Search Bar */}
       <section className="bg-white p-4 sm:p-5 rounded-3xl border border-stone-200/80 shadow-xs space-y-4">
-        {/* Customer Type Filter Buttons */}
         <div>
           <label className="text-[11px] font-bold text-stone-600 uppercase tracking-wider block mb-2">
             Filter by Customer Type:
@@ -180,13 +154,12 @@ export default function HistoryScreen({ orders, onReprintOrder, onRefreshOrders 
           </div>
         </div>
 
-        {/* Search Input & Date Picker */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-stone-100">
           <div className="relative">
             <Search className="w-4 h-4 text-stone-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search by Order ID (e.g. ORD-005) or amount..."
+              placeholder="Search Order ID (e.g. ORD-005)..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -222,28 +195,18 @@ export default function HistoryScreen({ orders, onReprintOrder, onRefreshOrders 
         </div>
       </section>
 
-      {/* Orders List / Table */}
+      {/* Orders List */}
       <section className="space-y-3">
         {paginatedOrders.length === 0 ? (
           <div className="bg-white p-12 text-center rounded-3xl border border-stone-200/80 shadow-xs">
             <p className="text-stone-600 text-sm font-semibold">
               No orders matched your search or filter.
             </p>
-            <button
-              onClick={() => {
-                setFilterType('ALL');
-                setSearchQuery('');
-                setSelectedDate('');
-              }}
-              className="mt-3 text-xs font-bold text-rose-600 hover:underline"
-            >
-              Reset all filters
-            </button>
           </div>
         ) : (
           paginatedOrders.map((order) => {
             const isFoodPanda = order.customerType === CUSTOMER_TYPES.FOODPANDA;
-            const item = order.items && order.items[0] ? order.items[0] : { qty: 1, price: 80 };
+            const item = order.items?.[0] || { qty: 1, price: 80 };
             const timeFormatted = format(new Date(order.timestamp), 'dd MMM yyyy, hh:mm a');
 
             return (
@@ -254,24 +217,15 @@ export default function HistoryScreen({ orders, onReprintOrder, onRefreshOrders 
                 <div className="flex items-start sm:items-center gap-3 sm:gap-4">
                   <div
                     className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
-                      isFoodPanda
-                        ? 'bg-pink-100 text-[#d70f64]'
-                        : 'bg-emerald-100 text-emerald-700'
+                      isFoodPanda ? 'bg-pink-100 text-[#d70f64]' : 'bg-emerald-100 text-emerald-700'
                     }`}
                   >
-                    {isFoodPanda ? (
-                      <Bike className="w-5 h-5 stroke-[2.5]" />
-                    ) : (
-                      <User className="w-5 h-5 stroke-[2.5]" />
-                    )}
+                    {isFoodPanda ? <Bike className="w-5 h-5 stroke-[2.5]" /> : <User className="w-5 h-5 stroke-[2.5]" />}
                   </div>
 
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-base font-black text-stone-900">
-                        {order.id}
-                      </span>
-                      {/* Customer Type Badge */}
+                      <span className="text-base font-black text-stone-900">{order.id}</span>
                       <span
                         className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border ${
                           isFoodPanda
@@ -280,17 +234,6 @@ export default function HistoryScreen({ orders, onReprintOrder, onRefreshOrders 
                         }`}
                       >
                         {isFoodPanda ? 'Food Panda Order' : 'Walk-in Customer'}
-                      </span>
-
-                      {/* Printed status */}
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          order.printed
-                            ? 'bg-stone-100 text-stone-600'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
-                        {order.printed ? 'Printed' : 'Unprinted'}
                       </span>
                     </div>
 
@@ -306,9 +249,7 @@ export default function HistoryScreen({ orders, onReprintOrder, onRefreshOrders 
 
                 <div className="flex items-center justify-between sm:justify-end gap-4 pt-3 sm:pt-0 border-t sm:border-0 border-stone-100">
                   <div className="text-left sm:text-right">
-                    <span className="block text-[11px] font-bold text-stone-600 uppercase">
-                      Total
-                    </span>
+                    <span className="block text-[11px] font-bold text-stone-600 uppercase">Total</span>
                     <span className="text-xl sm:text-2xl font-black text-stone-900">
                       Rs {order.total}
                     </span>

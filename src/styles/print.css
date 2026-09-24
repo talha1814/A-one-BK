@@ -1,0 +1,43 @@
+/* Print CSS for Thermal Printers (58mm / 80mm) */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .thermal-receipt-area,
+  .thermal-receipt-area * {
+    visibility: visible !important;
+  }
+
+  .thermal-receipt-area {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 58mm !important;
+    max-width: 58mm !important;
+    margin: 0 !important;
+    padding: 2mm 3mm !important;
+    color: #000000 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+    font-size: 11px !important;
+    line-height: 1.25 !important;
+    font-family: 'JetBrains Mono', 'Courier New', Courier, monospace !important;
+  }
+
+  @page {
+    size: 58mm auto;
+    margin: 0mm;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { User, Bike, Check } from 'lucide-react';
-import { CUSTOMER_TYPES } from '../constants';
+import { CUSTOMER_TYPES } from '../../constants';
 
 export default function CustomerTypeToggle({ selectedType, onSelectType }) {
   const isWalkIn = selectedType === CUSTOMER_TYPES.WALKIN;
@@ -10,10 +10,10 @@ export default function CustomerTypeToggle({ selectedType, onSelectType }) {
     <div className="w-full">
       <div className="flex items-center justify-between mb-2">
         <label className="text-xs font-bold tracking-wider uppercase text-stone-500">
-          Customer Type (Select Before Saving)
+          Customer Type (Required)
         </label>
-        <span className="text-xs font-medium text-stone-400">
-          {isWalkIn ? '🟢 Walk-in Selected' : '🔴 Food Panda Selected'}
+        <span className="text-xs font-semibold text-stone-400">
+          {isWalkIn ? '🟢 Walk-in Active' : '🔴 Food Panda Active'}
         </span>
       </div>
 
@@ -22,12 +22,11 @@ export default function CustomerTypeToggle({ selectedType, onSelectType }) {
         <button
           type="button"
           onClick={() => onSelectType(CUSTOMER_TYPES.WALKIN)}
-          className={`relative flex flex-col sm:flex-row items-center justify-center gap-2.5 p-3.5 sm:p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer shadow-sm ${
+          className={`relative flex flex-col sm:flex-row items-center justify-center gap-2.5 p-3.5 sm:p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer shadow-xs ${
             isWalkIn
               ? 'bg-emerald-600 text-white border-emerald-600 shadow-emerald-200 shadow-md scale-[1.01]'
               : 'bg-white text-stone-700 border-stone-200 hover:border-emerald-300 hover:bg-emerald-50/50'
           }`}
-          aria-pressed={isWalkIn}
         >
           {isWalkIn && (
             <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-white text-emerald-600 rounded-full shadow-xs">
@@ -59,12 +58,11 @@ export default function CustomerTypeToggle({ selectedType, onSelectType }) {
         <button
           type="button"
           onClick={() => onSelectType(CUSTOMER_TYPES.FOODPANDA)}
-          className={`relative flex flex-col sm:flex-row items-center justify-center gap-2.5 p-3.5 sm:p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer shadow-sm ${
+          className={`relative flex flex-col sm:flex-row items-center justify-center gap-2.5 p-3.5 sm:p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer shadow-xs ${
             isFoodPanda
               ? 'bg-[#d70f64] text-white border-[#d70f64] shadow-pink-200 shadow-md scale-[1.01]'
               : 'bg-white text-stone-700 border-stone-200 hover:border-pink-300 hover:bg-pink-50/50'
           }`}
-          aria-pressed={isFoodPanda}
         >
           {isFoodPanda && (
             <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-white text-[#d70f64] rounded-full shadow-xs">
@@ -87,7 +85,7 @@ export default function CustomerTypeToggle({ selectedType, onSelectType }) {
                 isFoodPanda ? 'text-pink-100' : 'text-stone-500'
               }`}
             >
-              Rider Delivery Pickup
+              Delivery Rider Pickup
             </span>
           </div>
         </button>

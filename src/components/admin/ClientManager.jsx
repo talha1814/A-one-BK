@@ -13,9 +13,11 @@ import {
   Copy,
   Check,
   History,
+  UserX,
+  CheckCircle2,
 } from 'lucide-react';
 import { formatDateStandard, getDaysRemaining, isLicenceExpired } from '../../utils/dateHelpers';
-import { generateRandomPassword } from '../../utils/codeGen';
+import { clearClientOrders } from '../../utils/storage';
 
 export default function ClientManager({
   clients,
@@ -29,6 +31,8 @@ export default function ClientManager({
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [extendModal, setExtendModal] = useState({ isOpen: false, client: null, days: 30, amount: '1500' });
+  const [clearSalesModal, setClearSalesModal] = useState({ isOpen: false, client: null });
+  const [toastMsg, setToastMsg] = useState('');
   const [copiedId, setCopiedId] = useState(null);
 
   const filteredClients = clients.filter((c) => {
@@ -65,8 +69,27 @@ export default function ClientManager({
     setExtendModal({ isOpen: false, client: null, days: 30, amount: '1500' });
   };
 
+  const handleConfirmClearSales = () => {
+    if (!clearSalesModal.client) return;
+    const client = clearSalesModal.client;
+    clearClientOrders(client.id);
+    const clientName = client.shopName || client.username;
+    setToastMsg(`All sales data cleared for ${clientName}`);
+    setClearSalesModal({ isOpen: false, client: null });
+    setTimeout(() => setToastMsg(''), 4000);
+  };
+
   return (
     <div className="space-y-6">
+      {/* Success Toast */}
+      {toastMsg && (
+        <div className="fixed top-5 right-5 z-50 bg-stone-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-emerald-500/50 flex items-center gap-2.5 text-xs font-bold animate-in fade-in slide-in-from-top-4">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastMsg}</span>
+          <button onClick={() => setToastMsg('')} className="ml-2 text-stone-400 hover:text-white cursor-pointer">✕</button>
+        </div>
+      )}
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -170,7 +193,7 @@ export default function ClientManager({
                           <button
                             onClick={() => handleCopyCredentials(client)}
                             title="Copy Credentials to Clipboard"
-                            className="text-slate-500 hover:text-white p-1 transition"
+                            className="text-slate-500 hover:text-white p-1 transition cursor-pointer"
                           >
                             {copiedId === client.id ? (
                               <Check className="w-3.5 h-3.5 text-emerald-400" />
@@ -267,17 +290,26 @@ export default function ClientManager({
                             <History className="w-4 h-4" />
                           </button>
 
-                          {/* Delete */}
+                          {/* FIX 2: Clear Sales Button with Red Trash Icon */}
+                          <button
+                            onClick={() => setClearSalesModal({ isOpen: true, client })}
+                            title="Clear Sales"
+                            className="p-1.5 rounded-lg bg-slate-800 text-rose-500 hover:bg-rose-950 hover:text-rose-300 border border-transparent hover:border-rose-800 transition cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+
+                          {/* Delete Client Account */}
                           <button
                             onClick={() => {
-                              if (window.confirm(`Permanently delete client ${client.username}?`)) {
+                              if (window.confirm(`Permanently delete client account ${client.username}?`)) {
                                 onDeleteClient(client.id);
                               }
                             }}
-                            title="Delete Client"
-                            className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:bg-rose-900 hover:text-rose-200 transition cursor-pointer"
+                            title="Delete Client Account"
+                            className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:bg-rose-950 hover:text-rose-200 transition cursor-pointer"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <UserX className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
@@ -289,6 +321,49 @@ export default function ClientManager({
           </table>
         </div>
       </div>
+
+      {/* FIX 2: Clear Sales Confirmation Modal */}
+      {clearSalesModal.isOpen && clearSalesModal.client && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-slate-900 border border-rose-800/80 rounded-3xl max-w-md w-full p-6 text-white shadow-2xl space-y-4">
+            <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+              <div className="w-10 h-10 rounded-full bg-rose-600/20 text-rose-500 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5 stroke-[2.5]" />
+              </div>
+              <div>
+                <h3 className="text-base font-black">Confirm Clear Sales Data</h3>
+                <p className="text-xs text-slate-400">Irreversible Action</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-slate-200 leading-relaxed">
+              Are you sure you want to clear ALL sales data for <span className="font-extrabold text-white underline decoration-rose-500">{clearSalesModal.client.shopName || clearSalesModal.client.username}</span>? This cannot be undone.
+            </p>
+
+            <div className="p-3 bg-slate-800/80 rounded-xl text-xs text-slate-400 border border-slate-700">
+              ℹ️ The client account (username, password, and licence duration) will remain completely intact. Only orders and sales history for this client will be wiped.
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => setClearSalesModal({ isOpen: false, client: null })}
+                className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmClearSales}
+                className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white text-xs font-black shadow-lg shadow-rose-900/40 transition cursor-pointer flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Clear All Sales</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Extend Expiry Modal */}
       {extendModal.isOpen && extendModal.client && (
@@ -341,13 +416,13 @@ export default function ClientManager({
                 <button
                   type="button"
                   onClick={() => setExtendModal({ isOpen: false, client: null, days: 30, amount: '' })}
-                  className="px-3 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold"
+                  className="px-3 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black"
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black cursor-pointer"
                 >
                   Confirm Extension
                 </button>

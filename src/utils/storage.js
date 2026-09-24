@@ -1,5 +1,18 @@
-import { PRODUCT, CUSTOMER_TYPES, STORAGE_KEY } from '../constants';
-import { subDays, format, subHours, subMinutes } from 'date-fns';
+import { PRODUCT, CUSTOMER_TYPES } from '../constants';
+import { subDays, format, subMinutes } from 'date-fns';
+
+// Helper to determine per-client storage key
+export function getClientStorageKey(clientId) {
+  if (clientId) return `aone_orders_${clientId}`;
+  try {
+    const raw = localStorage.getItem('aone_current_session');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed?.clientId) return `aone_orders_${parsed.clientId}`;
+    }
+  } catch {}
+  return 'aone_orders_CL001';
+}
 
 // Helper to generate seed demo orders for today and past days
 function generateDemoData() {
@@ -10,7 +23,6 @@ function generateDemoData() {
   // Past 6 days orders
   for (let daysAgo = 6; daysAgo >= 1; daysAgo--) {
     const dayDate = subDays(now, daysAgo);
-    // 6 to 12 orders per day
     const numOrders = Math.floor(Math.random() * 6) + 8;
     for (let i = 0; i < numOrders; i++) {
       const orderDate = new Date(dayDate);
@@ -31,7 +43,7 @@ function generateDemoData() {
     }
   }
 
-  // Today's orders so far (8 orders today)
+  // Today's orders
   const todayTimes = [
     subMinutes(now, 240),
     subMinutes(now, 180),
@@ -64,18 +76,25 @@ function generateDemoData() {
   };
 }
 
-export function loadPosData() {
+export function loadPosData(clientId) {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const key = getClientStorageKey(clientId);
+    const raw = localStorage.getItem(key);
     if (!raw) {
+      // Automatic migration: if old global key exists, adopt it for CL001
+      const oldGlobal = localStorage.getItem('aone_bun_kabab_pos_v1');
+      if (oldGlobal && key === 'aone_orders_CL001') {
+        localStorage.setItem(key, oldGlobal);
+        return JSON.parse(oldGlobal);
+      }
       const initial = generateDemoData();
-      savePosData(initial);
+      savePosData(initial, clientId);
       return initial;
     }
     const parsed = JSON.parse(raw);
     if (!parsed.orders || !Array.isArray(parsed.orders)) {
       const initial = generateDemoData();
-      savePosData(initial);
+      savePosData(initial, clientId);
       return initial;
     }
     return parsed;
@@ -85,16 +104,17 @@ export function loadPosData() {
   }
 }
 
-export function savePosData(data) {
+export function savePosData(data, clientId) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const key = getClientStorageKey(clientId);
+    localStorage.setItem(key, JSON.stringify(data));
   } catch (err) {
     console.error('Failed to save POS data to localStorage:', err);
   }
 }
 
-export function saveOrder({ customerType, qty, printed = false }) {
-  const currentData = loadPosData();
+export function saveOrder({ customerType, qty, printed = false }, clientId) {
+  const currentData = loadPosData(clientId);
   const counter = currentData.orderCounter || 1;
   const orderId = `ORD-${String(counter).padStart(3, '0')}`;
   const total = qty * PRODUCT.price;
@@ -120,17 +140,17 @@ export function saveOrder({ customerType, qty, printed = false }) {
     orderCounter: counter + 1,
   };
 
-  savePosData(updatedData);
+  savePosData(updatedData, clientId);
   return { newOrder, updatedData };
 }
 
-export function markOrderPrinted(orderId) {
-  const currentData = loadPosData();
+export function markOrderPrinted(orderId, clientId) {
+  const currentData = loadPosData(clientId);
   const updatedOrders = currentData.orders.map((ord) =>
     ord.id === orderId ? { ...ord, printed: true } : ord
   );
   const updatedData = { ...currentData, orders: updatedOrders };
-  savePosData(updatedData);
+  savePosData(updatedData, clientId);
   return updatedData;
 }
 
@@ -168,17 +188,23 @@ export function exportOrdersToCSV(orders) {
   document.body.removeChild(link);
 }
 
-export function resetToDemoData() {
+export function resetToDemoData(clientId) {
   const data = generateDemoData();
-  savePosData(data);
+  savePosData(data, clientId);
   return data;
 }
 
-export function clearAllOrders() {
+// Clear sales for a specific client (leaves client account intact)
+export function clearClientOrders(clientId) {
+  const key = `aone_orders_${clientId}`;
   const blankData = {
     orders: [],
     orderCounter: 1,
   };
-  savePosData(blankData);
+  localStorage.setItem(key, JSON.stringify(blankData));
   return blankData;
+}
+
+export function clearAllOrders(clientId) {
+  return clearClientOrders(clientId);
 }

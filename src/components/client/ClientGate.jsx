@@ -66,9 +66,17 @@ export default function ClientGate() {
     };
   }, [runLicenceCheck]);
 
+  const clientId = licenceState.client?.id;
+
+  useEffect(() => {
+    if (clientId) {
+      setPosData(loadPosData(clientId));
+    }
+  }, [clientId]);
+
   // Order save handler
   const handleSaveOrder = async ({ customerType, qty, printed }) => {
-    const { newOrder, updatedData } = saveOrder({ customerType, qty, printed });
+    const { newOrder, updatedData } = saveOrder({ customerType, qty, printed }, clientId);
     setPosData(updatedData);
 
     // Play POS confirmation beep
@@ -77,7 +85,7 @@ export default function ClientGate() {
     if (printed) {
       setActivePrintOrder(newOrder);
       await triggerPrint();
-      markOrderPrinted(newOrder.id);
+      markOrderPrinted(newOrder.id, clientId);
     }
 
     return newOrder;
@@ -89,7 +97,7 @@ export default function ClientGate() {
   };
 
   const handleRefreshOrders = () => {
-    setPosData(loadPosData());
+    setPosData(loadPosData(clientId));
   };
 
   // State guards

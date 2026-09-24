@@ -4,8 +4,8 @@ import { adminLogin } from '../../utils/licence';
 import { Link } from 'react-router-dom';
 
 export default function AdminLogin({ onLoginSuccess }) {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('adminpass123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -62,6 +62,7 @@ export default function AdminLogin({ onLoginSuccess }) {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter admin username"
                 className="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
@@ -77,6 +78,7 @@ export default function AdminLogin({ onLoginSuccess }) {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter admin password"
                 className="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
@@ -91,11 +93,6 @@ export default function AdminLogin({ onLoginSuccess }) {
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
-
-        <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-[11px] text-slate-400 space-y-1">
-          <span className="font-bold text-slate-300 block">Default Admin Login:</span>
-          <p>Username: <code className="text-indigo-300 font-mono">admin</code> | Password: <code className="text-indigo-300 font-mono">adminpass123</code></p>
-        </div>
 
         <div className="text-center pt-2">
           <Link

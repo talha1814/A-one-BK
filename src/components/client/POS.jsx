@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Minus, Save, Printer, Sparkles, CheckCircle2, RotateCcw, Banknote } from 'lucide-react';
+import { Plus, Minus, Save, Printer, Sparkles, CheckCircle2, RotateCcw, Banknote, ShoppingCart, ShoppingBag, Trash2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PRODUCT, PRODUCTS, CUSTOMER_TYPES } from '../../constants';
 import CustomerTypeToggle from './CustomerTypeToggle';
@@ -8,21 +8,66 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
   const [customerType, setCustomerType] = useState(CUSTOMER_TYPES.WALKIN);
   const [selectedProduct, setSelectedProduct] = useState(PRODUCTS ? PRODUCTS[0] : PRODUCT);
   const [qty, setQty] = useState(1);
+  const [cart, setCart] = useState([]);
   const [cashTendered, setCashTendered] = useState('');
   const [showCashHelper, setShowCashHelper] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  const total = qty * selectedProduct.price;
+  const currentItemTotal = qty * selectedProduct.price;
+  const isCartMode = cart.length > 0;
+  const cartSubtotal = cart.reduce((sum, it) => sum + it.qty * it.price, 0);
+  const cartTotalQty = cart.reduce((sum, it) => sum + it.qty, 0);
+  const payableTotal = isCartMode ? cartSubtotal : currentItemTotal;
 
   const handleIncrement = () => setQty((prev) => prev + 1);
   const handleDecrement = () => setQty((prev) => (prev > 1 ? prev - 1 : 1));
   const handleAddQty = (amount) => setQty((prev) => prev + amount);
 
+  const handleAddToCart = () => {
+    setCart((prev) => {
+      const idx = prev.findIndex((i) => i.productId === selectedProduct.id);
+      if (idx > -1) {
+        const copy = [...prev];
+        copy[idx] = { ...copy[idx], qty: copy[idx].qty + qty };
+        return copy;
+      }
+      return [
+        ...prev,
+        {
+          productId: selectedProduct.id,
+          name: selectedProduct.name,
+          shortName: selectedProduct.shortName || selectedProduct.name,
+          price: selectedProduct.price,
+          qty,
+        },
+      ];
+    });
+    setQty(1);
+  };
+
+  const handleUpdateCartQty = (productId, newQty) => {
+    if (newQty <= 0) {
+      setCart((prev) => prev.filter((i) => i.productId !== productId));
+      return;
+    }
+    setCart((prev) =>
+      prev.map((i) => (i.productId === productId ? { ...i, qty: newQty } : i))
+    );
+  };
+
+  const handleRemoveFromCart = (productId) => {
+    setCart((prev) => prev.filter((i) => i.productId !== productId));
+  };
+
+  const handleClearCart = () => {
+    setCart([]);
+  };
+
   const calculateChange = () => {
     const tendered = parseFloat(cashTendered);
-    if (isNaN(tendered) || tendered < total) return 0;
-    return tendered - total;
+    if (isNaN(tendered) || tendered < payableTotal) return 0;
+    return tendered - payableTotal;
   };
 
   const triggerCelebration = () => {
@@ -43,23 +88,50 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
     setIsSaving(true);
 
     try {
-      const savedOrder = await onSaveOrder({
-        customerType,
-        qty,
-        product: selectedProduct,
-        printed: shouldPrint,
-      });
+      let savedOrder;
+      if (isCartMode) {
+        savedOrder = await onSaveOrder({
+          customerType,
+          items: cart.map((it) => ({
+            productId: it.productId,
+            name: it.name,
+            qty: it.qty,
+            price: it.price,
+          })),
+          printed: shouldPrint,
+        });
 
-      triggerCelebration();
+        triggerCelebration();
 
-      setLastSaved({
-        orderId: savedOrder.id,
-        qty,
-        total,
-        productName: selectedProduct.shortName || selectedProduct.name,
-        customerType,
-        printed: shouldPrint,
-      });
+        setLastSaved({
+          orderId: savedOrder.id,
+          qty: cartTotalQty,
+          total: cartSubtotal,
+          productName: `${cart.length} items (${cartTotalQty} pcs)`,
+          customerType,
+          printed: shouldPrint,
+        });
+
+        setCart([]);
+      } else {
+        savedOrder = await onSaveOrder({
+          customerType,
+          qty,
+          product: selectedProduct,
+          printed: shouldPrint,
+        });
+
+        triggerCelebration();
+
+        setLastSaved({
+          orderId: savedOrder.id,
+          qty,
+          total: currentItemTotal,
+          productName: selectedProduct.shortName || selectedProduct.name,
+          customerType,
+          printed: shouldPrint,
+        });
+      }
 
       // Reset quantity to 1
       setQty(1);
@@ -190,7 +262,7 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
                 Current Item Total
               </span>
               <span className="block text-2xl sm:text-3xl font-black text-stone-900">
-                Rs {total}
+                Rs {currentItemTotal}
               </span>
             </div>
           </div>
@@ -260,6 +332,18 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
                 </button>
               ))}
             </div>
+
+            {/* Add to Cart Button */}
+            <div className="mt-3.5 pt-3 border-t border-stone-200">
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-98 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition cursor-pointer"
+              >
+                <ShoppingCart className="w-4 h-4 stroke-[2.5]" />
+                <span>Add {qty}x {selectedProduct.shortName} to Cart (Rs {currentItemTotal})</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -271,10 +355,18 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
             </div>
             <div>
               <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider">
-                Live Total
+                {isCartMode ? 'Cart Total' : 'Live Item Total'}
               </span>
               <p className="text-base sm:text-lg font-bold text-white">
-                <span className="text-rose-400 font-extrabold">{qty}</span> x {selectedProduct.shortName || selectedProduct.name} = Rs {total}
+                {isCartMode ? (
+                  <>
+                    <span className="text-amber-400 font-extrabold">{cartTotalQty} pcs</span> in Cart ({cart.length} unique items)
+                  </>
+                ) : (
+                  <>
+                    <span className="text-rose-400 font-extrabold">{qty}</span> x {selectedProduct.shortName || selectedProduct.name} = Rs {currentItemTotal}
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -283,12 +375,96 @@ export default function POS({ onSaveOrder, currentOrderNumber }) {
             <span className="block text-xs font-bold text-stone-400 uppercase tracking-wider">
               Payable Amount
             </span>
-            <span className="text-3xl sm:text-4xl font-black text-rose-400 tracking-tight">
-              Rs {total}
+            <span className="text-3xl sm:text-4xl font-black text-amber-400 tracking-tight">
+              Rs {payableTotal.toLocaleString()}
             </span>
           </div>
         </div>
       </section>
+
+      {/* Active Order Cart in POS */}
+      {isCartMode && (
+        <section className="bg-white rounded-3xl border border-stone-200/90 p-4 sm:p-5 shadow-xs space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center shadow-xs">
+                <ShoppingBag className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm sm:text-base font-black text-stone-900 leading-tight">
+                  Active Order Cart
+                </h3>
+                <span className="text-[11px] font-bold text-stone-500">
+                  {cartTotalQty} total pieces ({cart.length} item lines)
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleClearCart}
+              className="flex items-center gap-1 text-[11px] font-bold text-stone-500 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Clear Cart</span>
+            </button>
+          </div>
+
+          <div className="divide-y divide-stone-100">
+            {cart.map((item) => (
+              <div key={item.productId} className="py-2.5 flex items-center justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs sm:text-sm font-extrabold text-stone-900 truncate">
+                    {item.name}
+                  </p>
+                  <p className="text-[11px] text-stone-500">
+                    Rs {item.price} × {item.qty} = <span className="font-bold text-stone-800">Rs {(item.qty * item.price).toLocaleString()}</span>
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center border border-stone-200 rounded-lg bg-stone-50">
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateCartQty(item.productId, item.qty - 1)}
+                      className="w-7 h-7 flex items-center justify-center text-stone-700 hover:bg-stone-200 transition font-black text-xs cursor-pointer"
+                    >
+                      <Minus className="w-3 h-3 stroke-[3]" />
+                    </button>
+                    <span className="w-8 text-center text-xs font-black text-stone-900">
+                      {item.qty}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateCartQty(item.productId, item.qty + 1)}
+                      className="w-7 h-7 flex items-center justify-center text-stone-700 hover:bg-stone-200 transition font-black text-xs cursor-pointer"
+                    >
+                      <Plus className="w-3 h-3 stroke-[3]" />
+                    </button>
+                  </div>
+
+                  <span className="text-xs sm:text-sm font-black text-rose-600 w-16 text-right">
+                    Rs {(item.qty * item.price).toLocaleString()}
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveFromCart(item.productId)}
+                    className="p-1 text-stone-400 hover:text-rose-600 rounded-md transition cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-2 border-t border-stone-200 flex justify-between items-center text-xs font-bold text-stone-700">
+            <span>Subtotal ({cart.length} items):</span>
+            <span className="text-base font-black text-stone-900">Rs {cartSubtotal.toLocaleString()}</span>
+          </div>
+        </section>
+      )}
 
       {/* Cash / Change Helper */}
       <section className="bg-white rounded-2xl border border-stone-200/80 p-4 shadow-xs">

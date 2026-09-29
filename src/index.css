@@ -1,9 +1,18 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+  }
+
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    overflow-x: hidden;
   }
 
   .font-mono-receipt {
@@ -11,10 +20,37 @@
   }
 }
 
+/* Safe Area Utility */
+.safe-area-bottom {
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Touch Friendly Targets (min 44px) */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Mobile Slide-Up Drawer Animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -60,7 +96,6 @@
     line-height: 1.25 !important;
   }
 
-  /* Paper roll size override */
   @page {
     size: 58mm auto;
     margin: 0mm;
@@ -69,18 +104,4 @@
   .no-print {
     display: none !important;
   }
-}
-
-/* Soft pulse keyframe */
-@keyframes softPulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.03);
-  }
-}
-
-.animate-soft-pulse {
-  animation: softPulse 2s ease-in-out infinite;
 }

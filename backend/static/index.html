@@ -1,0 +1,2496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>A-One Bun Kabab | Business Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0A0E17;
+      --bg-card: rgba(18, 24, 38, 0.75);
+      --bg-card-hover: rgba(28, 36, 56, 0.9);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(16, 185, 129, 0.4);
+      --emerald: #10B981;
+      --emerald-glow: rgba(16, 185, 129, 0.25);
+      --cyan: #06B6D4;
+      --amber: #F59E0B;
+      --rose: #F43F5E;
+      --indigo: #6366F1;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --text-dim: #6B7280;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4, .brand-font {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Top Navigation Header */
+    header {
+      background: rgba(10, 15, 26, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 0.85rem 1.25rem;
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #10B981, #06B6D4);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 0 20px var(--emerald-glow);
+    }
+
+    .brand-info h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .badge-sub {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-info p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-dim);
+    }
+
+    .status-dot.online {
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+      animation: pulse-dot 2s infinite;
+    }
+
+    .status-dot.offline {
+      background: var(--rose);
+      box-shadow: 0 0 10px var(--rose);
+    }
+
+    .status-dot.connecting {
+      background: var(--amber);
+      animation: pulse-dot 1s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .clock-display {
+      font-variant-numeric: tabular-nums;
+      color: var(--cyan);
+      font-weight: 600;
+      font-size: 0.8rem;
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      padding: 0.3rem 0.65rem;
+      border-radius: 8px;
+    }
+
+    /* Navigation Tabs Bar */
+    .tabs-bar {
+      background: rgba(13, 19, 33, 0.85);
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem 1.25rem;
+      position: sticky;
+      top: 67px;
+      z-index: 45;
+      backdrop-filter: blur(16px);
+    }
+
+    .tabs-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tabs-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-tab {
+      padding: 0.6rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-tab:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+    }
+
+    .nav-tab.active {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald);
+      border-color: rgba(16, 185, 129, 0.35);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem;
+      flex: 1;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 4 AM Rule Banner */
+    .rule-banner {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.08));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .rule-content {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .rule-icon {
+      font-size: 1.75rem;
+    }
+
+    .rule-content h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .rule-content p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .rollover-ticker {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .ticker-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .ticker-val {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--amber);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* KPI Row */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    @media (max-width: 900px) {
+      .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .kpi-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .kpi-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .kpi-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .kpi-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-top: 0.15rem;
+      color: #FFF;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Dashboard 2-column grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Presets for Bun Kabab */
+    .presets-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (max-width: 600px) {
+      .presets-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .preset-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.85rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-main);
+    }
+
+    .preset-btn:hover {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .preset-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .preset-price {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--emerald);
+      margin-top: 0.25rem;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Forms */
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 0.65rem;
+      margin-bottom: 0.85rem;
+    }
+
+    @media (max-width: 640px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .form-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      color: #FFF;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--emerald);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .total-preview-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .total-preview-amount {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--emerald);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.15rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: #FFF;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: #000;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-warning:hover {
+      filter: brightness(1.1);
+    }
+
+    .btn-danger {
+      background: rgba(244, 63, 94, 0.15);
+      color: #FB7185;
+      border-color: rgba(244, 63, 94, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: rgba(244, 63, 94, 0.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border-color: var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.76rem;
+      border-radius: 8px;
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.25);
+      flex: 1;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.86rem;
+    }
+
+    thead {
+      background: rgba(255, 255, 255, 0.03);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    th {
+      padding: 0.7rem 0.85rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 0.75rem 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--text-dim);
+    }
+
+    /* Cart footer */
+    .cart-summary {
+      margin-top: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .cart-total-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--emerald);
+      text-shadow: 0 0 25px var(--emerald-glow);
+    }
+
+    /* Category Badge */
+    .cat-badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .cat-raw-material { background: rgba(16, 185, 129, 0.15); color: #34D399; }
+    .cat-utilities { background: rgba(245, 158, 11, 0.15); color: #FBBF24; }
+    .cat-staff { background: rgba(99, 102, 241, 0.15); color: #818CF8; }
+    .cat-packaging { background: rgba(6, 182, 212, 0.15); color: #22D3EE; }
+    .cat-other { background: rgba(156, 163, 175, 0.15); color: #D1D5DB; }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1.25rem;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #111827;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      max-width: 540px;
+      width: 100%;
+      padding: 1.75rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      animation: modal-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes modal-enter {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-desc {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    /* Auth Gate Screen */
+    #authGate {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-dark);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    #authGate.active {
+      display: flex;
+    }
+
+    .auth-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      max-width: 420px;
+      width: 100%;
+      padding: 2.25rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      text-align: center;
+    }
+
+    .auth-logo {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #10B981, #06B6D4);
+      border-radius: 18px;
+      margin: 0 auto 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 0 30px var(--emerald-glow);
+    }
+
+    /* Toast Container */
+    .toast-container {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 90vw;
+    }
+
+    .toast {
+      background: #1F2937;
+      color: #FFF;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.85rem 1.15rem;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      animation: slide-toast 0.3s ease-out;
+    }
+
+    .toast.success { border-left: 4px solid var(--emerald); }
+    .toast.error { border-left: 4px solid var(--rose); }
+    .toast.warning { border-left: 4px solid var(--amber); }
+
+    @keyframes slide-toast {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .code-pill {
+      font-family: monospace;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      color: var(--cyan);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AUTHENTICATION GATE (CLIENT LOGIN) -->
+  <div id="authGate">
+    <div class="auth-box">
+      <div class="auth-logo">🍔</div>
+      <h2 style="font-size: 1.45rem; font-weight: 800; margin-bottom: 0.35rem;">A-ONE BUN KABAB</h2>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.75rem;">
+        Complete Business Management Portal<br>
+        (Sales &bull; Expenses &bull; Udhaar Book)
+      </p>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div style="text-align: left; margin-bottom: 1rem;">
+          <label style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.35rem; font-weight: 600;">
+            User ID / Username
+          </label>
+          <input type="text" id="loginUser" class="form-input" placeholder="e.g. admin" value="admin" required>
+        </div>
+
+        <div style="text-align: left; margin-bottom: 1.5rem;">
+          <label style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.35rem; font-weight: 600;">
+            Password
+          </label>
+          <input type="password" id="loginPass" class="form-input" placeholder="Enter password" value="admin123" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem;">
+          🔐 Sign In to Portal
+        </button>
+      </form>
+      <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 1rem;">
+        Default credentials: <code class="code-pill">admin</code> / <code class="code-pill">admin123</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP HEADER -->
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">🍔</div>
+        <div class="brand-info">
+          <h1>
+            A-One Bun Kabab
+            <span class="badge-sub">Business Manager</span>
+          </h1>
+          <p>Burns Road, Karachi &bull; Database: <strong id="dbTargetLabel" class="code-pill">MongoDB</strong></p>
+        </div>
+      </div>
+
+      <div class="header-status">
+        <!-- MongoDB Status Indicator & Setup Trigger -->
+        <div id="mongoStatusPill" class="status-pill" style="cursor: pointer;" onclick="openMongoConfigModal()" title="Click to Connect or Configure MongoDB">
+          <div id="mongoDot" class="status-dot connecting"></div>
+          <span id="mongoStatusText">MongoDB: Checking...</span>
+          <button class="btn btn-ghost btn-sm" style="padding: 0.15rem 0.45rem; font-size: 0.72rem; margin-left: 0.25rem;" onclick="event.stopPropagation(); openMongoConfigModal();">⚙️ Setup</button>
+        </div>
+
+        <!-- Live Clock -->
+        <div class="clock-display" id="liveClock">--:--:--</div>
+
+        <!-- Active Business Day Badge -->
+        <div class="status-pill" style="border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.08);">
+          <span>🗓️ Day:</span>
+          <strong id="headerBizDate" style="color: var(--emerald);">Loading...</strong>
+        </div>
+
+        <!-- Logout Button -->
+        <button class="btn btn-ghost btn-sm" onclick="logout()" title="Logout">
+          🚪 Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS BAR -->
+  <nav class="tabs-bar">
+    <div class="tabs-container">
+      <button class="nav-tab active" onclick="switchTab('salesTab')">
+        🛒 1. Sales &amp; Counter
+      </button>
+      <button class="nav-tab" onclick="switchTab('expensesTab')">
+        💸 2. Daily Expenses (Kharcha)
+      </button>
+      <button class="nav-tab" onclick="switchTab('creditTab')">
+        📖 3. Udhaar Ledger (Credit Book)
+      </button>
+      <button class="nav-tab" onclick="switchTab('reportsTab')">
+        📊 4. Reports &amp; Profit Summary
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- CRITICAL 4:00 AM DAY-CHANGE BANNER -->
+    <div class="rule-banner">
+      <div class="rule-content">
+        <div class="rule-icon">⏰</div>
+        <div>
+          <h3>
+            4:00 AM Business Day Boundary Active
+            <span class="badge-sub" style="background: rgba(245, 158, 11, 0.2); color: var(--amber); border-color: rgba(245, 158, 11, 0.4);">
+              Vercel &amp; Cron Ready
+            </span>
+          </h3>
+          <p>
+            Sales and expenses between <strong>4:00 AM today</strong> and <strong>3:59:59 AM tomorrow</strong> belong to today's business day.
+          </p>
+        </div>
+      </div>
+
+      <div class="rollover-ticker">
+        <div>
+          <div class="ticker-label">Next 4:00 AM Rollover In</div>
+          <div class="ticker-val" id="countdownTimer">--h --m --s</div>
+        </div>
+        <button class="btn btn-warning btn-sm" onclick="openRolloverModal()">
+          ⚡ Close Day Now
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: SALES & LIVE CART -->
+    <!-- ========================================== -->
+    <div id="salesTab" class="tab-content active">
+      <!-- KPI ROW FOR SALES -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald);">💰</div>
+          <div class="kpi-content">
+            <div class="kpi-label">Today's Live Sales</div>
+            <div class="kpi-value" id="kpiTodaySales" style="color: var(--emerald);">Rs 0</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.15); color: var(--indigo);">🍔</div>
+          <div class="kpi-content">
+            <div class="kpi-label">Kabab Pieces Sold Today</div>
+            <div class="kpi-value" id="kpiTodayItems">0</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(244, 63, 94, 0.15); color: var(--rose);">💸</div>
+          <div class="kpi-content">
+            <div class="kpi-label">Today's Expenses (Kharcha)</div>
+            <div class="kpi-value" id="kpiTodayExpenses" style="color: var(--rose);">Rs 0</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(6, 182, 212, 0.15); color: var(--cyan);">💎</div>
+          <div class="kpi-content">
+            <div class="kpi-label">Today's Net Profit</div>
+            <div class="kpi-value" id="kpiTodayProfit" style="color: var(--cyan);">Rs 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2-COLUMN SALES GRID -->
+      <div class="dashboard-grid">
+        <!-- Sales Entry Form -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>🍔</span> Record Bun Kabab Sale
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="refreshSales()">🔄 Refresh</button>
+          </div>
+
+          <div class="presets-label">Click Product to Select</div>
+          <div class="presets-grid">
+            <div class="preset-btn" onclick="selectPreset('Bun Kabab Rs: 80/-', 80)">
+              <div class="preset-name">Bun Kabab (Classic)</div>
+              <div class="preset-price">Rs 80</div>
+            </div>
+            <div class="preset-btn" onclick="selectPreset('Bun Kabab Rs: 100/-', 100)">
+              <div class="preset-name">Bun Kabab (Special)</div>
+              <div class="preset-price">Rs 100</div>
+            </div>
+            <div class="preset-btn" onclick="selectPreset('Bun Kabab Rs: 150/-', 150)">
+              <div class="preset-name">Bun Kabab (Jumbo)</div>
+              <div class="preset-price">Rs 150</div>
+            </div>
+          </div>
+
+          <form id="salesForm" onsubmit="handleSaleSubmit(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Item Name</label>
+                <input type="text" id="itemName" class="form-input" value="Bun Kabab Rs: 80/-" required>
+              </div>
+              <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" id="itemQty" class="form-input" min="1" value="1" required oninput="calcSalePreview()">
+              </div>
+              <div class="form-group">
+                <label>Price (Rs)</label>
+                <input type="number" id="itemPrice" class="form-input" min="0" value="80" required oninput="calcSalePreview()">
+              </div>
+            </div>
+
+            <div class="total-preview-box">
+              <div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Line Total</div>
+                <div style="font-size: 0.85rem; color: #FFF;" id="salePreviewCalc">1 &times; Rs 80</div>
+              </div>
+              <div class="total-preview-amount" id="salePreviewTotal">Rs 80</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+              ➕ Add to Today's CurrentSale
+            </button>
+          </form>
+        </div>
+
+        <!-- Live Cart / CurrentSale -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>📋</span> CurrentSale (Working Shift)
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="clearLiveCart()">🗑️ Clear Cart</button>
+          </div>
+
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Business Day: <strong id="cartBizDate" style="color: var(--cyan);">--</strong> &bull; Collection: <code class="code-pill">CurrentSale</code>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Item</th>
+                  <th style="text-align: right;">Price</th>
+                  <th style="text-align: center;">Qty</th>
+                  <th style="text-align: right;">Total</th>
+                  <th style="text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="cartTableBody">
+                <tr><td colspan="6" class="empty-state">Loading live sales...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="cart-summary">
+            <div>
+              <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted);">Today's Grand Total</div>
+              <div class="cart-total-value" id="cartTotalDisplay">Rs 0</div>
+            </div>
+            <button class="btn btn-warning" onclick="openRolloverModal()">
+              ⏰ Close &amp; Archive Day
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: DAILY EXPENSES (KHARCHA) -->
+    <!-- ========================================== -->
+    <div id="expensesTab" class="tab-content">
+      <div class="dashboard-grid">
+        <!-- Add Expense Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>💸</span> Add Daily Expense (Kharcha)
+            </div>
+          </div>
+
+          <form id="expenseForm" onsubmit="handleExpenseSubmit(event)">
+            <div style="margin-bottom: 0.85rem;">
+              <label style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.3rem; font-weight: 600;">
+                Expense Title / Description
+              </label>
+              <input type="text" id="expTitle" class="form-input" placeholder="e.g. 50 Bread Buns, Gas Cylinder, Daily Staff Wage" required>
+            </div>
+
+            <div class="form-row" style="grid-template-columns: 1fr 1fr;">
+              <div class="form-group">
+                <label>Category</label>
+                <select id="expCategory" class="form-input">
+                  <option value="raw-material">Raw Material (Buns, Meat, Spices)</option>
+                  <option value="utilities">Utilities (Gas, Electric)</option>
+                  <option value="staff">Staff Wages / Food</option>
+                  <option value="packaging">Packaging (Bags, Paper)</option>
+                  <option value="other">Other Miscellaneous</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Amount (Rs)</label>
+                <input type="number" id="expAmount" class="form-input" min="1" placeholder="Rs 0" required>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+              <label style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.3rem; font-weight: 600;">
+                Notes (Optional)
+              </label>
+              <input type="text" id="expNotes" class="form-input" placeholder="Optional supplier name or receipt memo">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              💾 Record Expense
+            </button>
+          </form>
+        </div>
+
+        <!-- Today's Expenses List -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>📜</span> Today's Expenses Log
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="fetchExpenses()">🔄 Refresh</button>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th style="text-align: right;">Amount</th>
+                  <th style="text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="expenseTableBody">
+                <tr><td colspan="4" class="empty-state">Loading expenses...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="cart-summary">
+            <div>
+              <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted);">Total Today's Kharcha</div>
+              <div style="font-family: 'Outfit'; font-size: 1.75rem; font-weight: 800; color: var(--rose);" id="expenseTotalDisplay">Rs 0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: CUSTOMER UDHAAR LEDGER (CREDIT BOOK) -->
+    <!-- ========================================== -->
+    <div id="creditTab" class="tab-content">
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <span>📖</span> Customer Credit Ledger (Udhaar Book)
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Track regular customers, shopkeepers, and credit accounts. Record new credit (Udhaar Diya) and payments (Vasooli Li).
+            </p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openAddCustomerModal()">
+            ➕ Add New Customer
+          </button>
+        </div>
+
+        <!-- Ledger KPIs -->
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; padding: 0.85rem 1.25rem;">
+            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted);">Total Money Stuck in Udhaar</div>
+            <div style="font-family: 'Outfit'; font-size: 1.6rem; font-weight: 800; color: var(--amber);" id="ledgerTotalDebt">Rs 0</div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; padding: 0.85rem 1.25rem;">
+            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted);">Active Debtor Accounts</div>
+            <div style="font-family: 'Outfit'; font-size: 1.6rem; font-weight: 800; color: #FFF;" id="ledgerDebtorCount">0</div>
+          </div>
+        </div>
+
+        <div class="table-container" style="max-height: 480px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Phone</th>
+                <th style="text-align: right;">Balance Owed</th>
+                <th>Notes</th>
+                <th style="text-align: center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="creditTableBody">
+              <tr><td colspan="5" class="empty-state">Loading customer ledger...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: REPORTS & FINANCIAL OVERVIEW -->
+    <!-- ========================================== -->
+    <div id="reportsTab" class="tab-content">
+      <!-- Lifetime KPIs -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald);">📈</div>
+          <div class="kpi-content">
+            <div class="kpi-label">All-Time Sales Revenue</div>
+            <div class="kpi-value" id="kpiAllTimeSales">Rs 0</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(244, 63, 94, 0.15); color: var(--rose);">💸</div>
+          <div class="kpi-content">
+            <div class="kpi-label">All-Time Total Expenses</div>
+            <div class="kpi-value" id="kpiAllTimeExpenses">Rs 0</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(6, 182, 212, 0.15); color: var(--cyan);">💎</div>
+          <div class="kpi-content">
+            <div class="kpi-label">All-Time Net Profit</div>
+            <div class="kpi-value" id="kpiAllTimeProfit">Rs 0</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--amber);">📅</div>
+          <div class="kpi-content">
+            <div class="kpi-label">Archived Business Days</div>
+            <div class="kpi-value" id="kpiReportDays">0 Days</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 📅 COMPLETE SINGLE-DAY AUDIT REPORT WITH DATE PICKER -->
+      <div class="card" style="margin-bottom: 2rem; border-color: rgba(6, 182, 212, 0.35);">
+        <div class="card-header" style="flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <div class="card-title" style="color: var(--cyan);">
+              <span>📅</span> Single-Day Complete Business Report
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Select any past or current date to view full sales breakdown, itemized expenses, net profit, and Udhaar activity.
+            </p>
+          </div>
+
+          <!-- Date Selector Controls -->
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="setAuditDate('today')">Today</button>
+            <button class="btn btn-ghost btn-sm" onclick="setAuditDate('yesterday')">Yesterday</button>
+            <button class="btn btn-ghost btn-sm" onclick="setAuditDate('dayBefore')">2 Days Ago</button>
+            <input type="date" id="auditDateInput" class="form-input" style="width: auto; padding: 0.35rem 0.65rem;" onchange="loadSingleDayReport()">
+            <button class="btn btn-primary btn-sm" onclick="loadSingleDayReport()">🔍 View Report</button>
+            <button class="btn btn-ghost btn-sm" onclick="printSingleDayReport()">🖨️ Print</button>
+          </div>
+        </div>
+
+        <!-- Dynamic Report Results Container -->
+        <div id="singleDayReportContent">
+          <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+            Pick a date above or click "Today" / "Yesterday" to review complete daily sales, expenses, and Udhaar statement.
+          </div>
+        </div>
+      </div>
+
+      <!-- Archived Daily Sales -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>📚</span> Archived Daily Sales (DailySale Collection)
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-ghost btn-sm" onclick="seedDemoData()">🧪 Seed Past Demo Days</button>
+            <button class="btn btn-ghost btn-sm" onclick="fetchDailyHistory()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="table-container" style="max-height: 480px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Business Date</th>
+                <th>Items Sold</th>
+                <th style="text-align: right;">Total Sale</th>
+                <th>Finalized At</th>
+                <th style="text-align: center;">Details</th>
+              </tr>
+            </thead>
+            <tbody id="dailyReportTableBody">
+              <tr><td colspan="5" class="empty-state">Loading archived records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODALS -->
+  <!-- ========================================== -->
+
+  <!-- Modal: Close Day / Rollover Confirmation -->
+  <div id="rolloverModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-title">
+        <span>⏰</span> Confirm Close Business Day
+      </div>
+      <p class="modal-desc">
+        Are you ready to close and finalize today's shift?
+        <br><br>
+        1. All sales in <code class="code-pill">CurrentSale</code> will be finalized and archived into <code class="code-pill">DailySale</code>.
+        <br>2. A fresh business day session will start with zero live items.
+        <br><br>
+        <em>Note: During cloud deployment on Vercel, this runs automatically at 4:00 AM PKT via Vercel Cron.</em>
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeRolloverModal()">Cancel</button>
+        <button class="btn btn-warning" onclick="executeRollover()">Yes, Close Day Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: MongoDB Connection Setup -->
+  <div id="mongoConfigModal" class="modal-backdrop">
+    <div class="modal" style="max-width: 580px;">
+      <div class="modal-title">
+        <span>⚙️</span> Connect MongoDB Database
+      </div>
+      <p class="modal-desc">
+        Configure your MongoDB connection string. You can connect to local MongoDB (with or without username/password) or MongoDB Atlas (cloud for Vercel).
+      </p>
+
+      <form onsubmit="handleMongoConfigSubmit(event)">
+        <div style="margin-bottom: 1rem;">
+          <label style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.35rem; font-weight: 600;">
+            MongoDB Connection String (URI)
+          </label>
+          <input type="text" id="cfgMongoUri" class="form-input" placeholder="e.g. mongodb://USERNAME:PASSWORD@localhost:27017/?authSource=admin" required>
+        </div>
+
+        <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.45rem; font-weight: 600; text-transform: uppercase;">
+          Quick Presets (Click to insert):
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+          <button type="button" class="btn btn-ghost btn-sm" onclick="setMongoPreset('local_auth')">
+            🔑 Local with Auth (authSource=admin)
+          </button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="setMongoPreset('local_noauth')">
+            💻 Local Default (27017)
+          </button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="setMongoPreset('atlas')">
+            ☁️ MongoDB Atlas Template
+          </button>
+        </div>
+
+        <div id="mongoModalFeedback" style="display: none; padding: 0.75rem 1rem; border-radius: 10px; margin-bottom: 1rem; font-size: 0.82rem;"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeMongoConfigModal()">Cancel</button>
+          <button type="submit" id="btnSaveMongo" class="btn btn-primary">
+            ⚡ Connect &amp; Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add Credit Customer -->
+  <div id="addCustomerModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-title">
+        <span>👤</span> Add New Customer to Udhaar Book
+      </div>
+      <form onsubmit="handleAddCustomer(event)">
+        <div style="margin-bottom: 0.85rem;">
+          <label style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.3rem; font-weight: 600;">
+            Customer Name
+          </label>
+          <input type="text" id="custName" class="form-input" placeholder="e.g. Bhai Rashid Electrician" required>
+        </div>
+
+        <div style="margin-bottom: 0.85rem;">
+          <label style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.3rem; font-weight: 600;">
+            Phone Number (Optional)
+          </label>
+          <input type="text" id="custPhone" class="form-input" placeholder="e.g. 0300-1234567">
+        </div>
+
+        <div style="margin-bottom: 0.85rem;">
+          <label style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.3rem; font-weight: 600;">
+            Opening Balance (Rs)
+          </label>
+          <input type="number" id="custOpeningBalance" class="form-input" placeholder="0" value="0">
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.3rem; font-weight: 600;">
+            Notes
+          </label>
+          <input type="text" id="custNotes" class="form-input" placeholder="e.g. Workshop next door">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeAddCustomerModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Customer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Record Udhaar / Payment -->
+  <div id="txModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-title" id="txModalTitle">
+        <span>💸</span> Record Udhaar Transaction
+      </div>
+      <form onsubmit="handleTransactionSubmit(event)">
+        <input type="hidden" id="txCustomerId">
+        <input type="hidden" id="txType">
+
+        <div style="margin-bottom: 0.85rem;">
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Customer:</div>
+          <strong id="txCustomerName" style="color: var(--cyan); font-size: 1.1rem; font-family: 'Outfit';">--</strong>
+        </div>
+
+        <div style="margin-bottom: 0.85rem;">
+          <label style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.3rem; font-weight: 600;">
+            Amount (Rs)
+          </label>
+          <input type="number" id="txAmount" class="form-input" min="1" placeholder="Rs 0" required>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.3rem; font-weight: 600;">
+            Description / Reason
+          </label>
+          <input type="text" id="txDesc" class="form-input" placeholder="e.g. 5 Bun Kababs / Cash Payment" required>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeTxModal()">Cancel</button>
+          <button type="submit" id="txSubmitBtn" class="btn btn-primary">Confirm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Customer Ledger Statement -->
+  <div id="statementModal" class="modal-backdrop">
+    <div class="modal" style="max-width: 650px;">
+      <div class="modal-title">
+        <span>📜</span> <span id="statementCustName">Customer Ledger</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 0.75rem 1rem; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 1rem;">
+        <span>Current Outstanding Balance:</span>
+        <strong id="statementCurrentBalance" style="font-size: 1.25rem; font-family: 'Outfit'; color: var(--amber);">Rs 0</strong>
+      </div>
+
+      <div class="table-container" style="max-height: 320px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th style="text-align: right;">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="statementTableBody">
+            <tr><td colspan="4" class="empty-state">No transaction history.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="closeStatementModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Daily Sale Items Breakdown -->
+  <div id="detailModal" class="modal-backdrop">
+    <div class="modal" style="max-width: 600px;">
+      <div class="modal-title">
+        <span>🍔</span> <span id="detailDateTitle">Day Breakdown</span>
+      </div>
+      <div id="detailContent"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="closeDetailModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Alerts Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script>
+    // State
+    let authToken = localStorage.getItem('aone_auth_token') || null;
+    let nextRolloverTime = null;
+
+    // Toast helper
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'}</span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // Authenticated API Fetch wrapper
+    async function apiFetch(url, options = {}) {
+      const headers = options.headers || {};
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      options.headers = headers;
+      const res = await fetch(url, options);
+      if (res.status === 401) {
+        showToast('Session expired. Please log in.', 'error');
+        showAuthGate();
+      }
+      return res;
+    }
+
+    // Auth gate controls
+    function checkAuth() {
+      if (!authToken) {
+        showAuthGate();
+      } else {
+        hideAuthGate();
+      }
+    }
+
+    function showAuthGate() {
+      document.getElementById('authGate').classList.add('active');
+    }
+
+    function hideAuthGate() {
+      document.getElementById('authGate').classList.remove('active');
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('loginUser').value.trim();
+      const password = document.getElementById('loginPass').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          authToken = data.token;
+          localStorage.setItem('aone_auth_token', authToken);
+          hideAuthGate();
+          showToast('Welcome back, Admin!', 'success');
+          initData();
+        } else {
+          showToast(data.error || 'Login failed', 'error');
+        }
+      } catch (err) {
+        showToast('Login network error: ' + err.message, 'error');
+      }
+    }
+
+    function logout() {
+      authToken = null;
+      localStorage.removeItem('aone_auth_token');
+      showToast('Logged out.', 'warning');
+      showAuthGate();
+    }
+
+    // Tab switcher
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+      const idx = ['salesTab', 'expensesTab', 'creditTab', 'reportsTab'].indexOf(tabId);
+      document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+
+      if (tabId === 'salesTab') refreshSales();
+      if (tabId === 'expensesTab') fetchExpenses();
+      if (tabId === 'creditTab') fetchCreditLedger();
+      if (tabId === 'reportsTab') fetchOverviewReports();
+    }
+
+    // Live clock & countdown
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('liveClock').textContent = now.toLocaleTimeString();
+
+      if (nextRolloverTime) {
+        const diffMs = Math.max(0, new Date(nextRolloverTime).getTime() - now.getTime());
+        const totalSecs = Math.floor(diffMs / 1000);
+        const h = Math.floor(totalSecs / 3600);
+        const m = Math.floor((totalSecs % 3600) / 60);
+        const s = totalSecs % 60;
+        document.getElementById('countdownTimer').textContent = 
+          `${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+      }
+    }
+    setInterval(updateClock, 1000);
+
+    // Fetch system health & status
+    async function fetchStatus() {
+      try {
+        const res = await apiFetch('/api/status');
+        const data = await res.json();
+        if (data.success) {
+          const db = data.database;
+          const dot = document.getElementById('mongoDot');
+          const txt = document.getElementById('mongoStatusText');
+          const target = document.getElementById('dbTargetLabel');
+
+          if (db.status === 'connected') {
+            dot.className = 'status-dot online';
+            txt.textContent = `MongoDB: Connected`;
+            target.textContent = db.uriType || 'MongoDB Atlas';
+          } else {
+            dot.className = 'status-dot offline';
+            txt.textContent = `MongoDB: Offline/Retrying`;
+            target.textContent = 'Local / Memory';
+          }
+
+          document.getElementById('headerBizDate').textContent = data.businessDay.currentDate;
+          document.getElementById('cartBizDate').textContent = data.businessDay.currentDate;
+
+          if (data.businessDay.rolloverCountdown) {
+            nextRolloverTime = data.businessDay.rolloverCountdown.nextRolloverTime;
+          }
+        }
+      } catch (err) {
+        console.error('Status error:', err);
+      }
+    }
+
+    // --- SALES MODULE ---
+    function selectPreset(name, price) {
+      document.getElementById('itemName').value = name;
+      document.getElementById('itemPrice').value = price;
+      document.getElementById('itemQty').value = 1;
+      calcSalePreview();
+    }
+
+    function calcSalePreview() {
+      const qty = Number(document.getElementById('itemQty').value) || 1;
+      const price = Number(document.getElementById('itemPrice').value) || 0;
+      const total = qty * price;
+      document.getElementById('salePreviewCalc').textContent = `${qty} \u00D7 Rs ${price}`;
+      document.getElementById('salePreviewTotal').textContent = `Rs ${total.toLocaleString()}`;
+    }
+
+    async function handleSaleSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('itemName').value.trim();
+      const quantity = Number(document.getElementById('itemQty').value) || 1;
+      const price = Number(document.getElementById('itemPrice').value) || 0;
+
+      try {
+        const res = await apiFetch('/api/sales', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, quantity, price }),
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast(`Recorded: ${quantity} \u00D7 ${name}`, 'success');
+          selectPreset('Bun Kabab Rs: 80/-', 80);
+          refreshSales();
+          fetchOverviewReports();
+        } else {
+          showToast(result.error || 'Failed', 'error');
+        }
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    async function refreshSales() {
+      try {
+        const res = await apiFetch('/api/current');
+        const data = await res.json();
+        if (data.success && data.data) {
+          renderCart(data.data);
+          if (data.rolloverCountdown) {
+            nextRolloverTime = data.rolloverCountdown.nextRolloverTime;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderCart(sale) {
+      const items = sale.items || [];
+      const total = sale.totalSale || 0;
+      document.getElementById('cartTotalDisplay').textContent = `Rs ${total.toLocaleString()}`;
+      document.getElementById('kpiTodaySales').textContent = `Rs ${total.toLocaleString()}`;
+
+      const totalQty = items.reduce((sum, i) => sum + (Number(i.quantity) || 0), 0);
+      document.getElementById('kpiTodayItems').textContent = totalQty;
+
+      const tbody = document.getElementById('cartTableBody');
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No Bun Kabab sales recorded yet today.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map((it, idx) => `
+        <tr>
+          <td style="color: var(--text-dim); font-size: 0.78rem;">#${idx + 1}</td>
+          <td><strong>${escapeHtml(it.name)}</strong></td>
+          <td style="text-align: right; color: var(--text-muted);">Rs ${Number(it.price).toLocaleString()}</td>
+          <td style="text-align: center;"><span class="badge-sub">${it.quantity}</span></td>
+          <td style="text-align: right; font-weight: 700; color: var(--emerald);">Rs ${Number(it.total).toLocaleString()}</td>
+          <td style="text-align: center;">
+            <button class="btn btn-danger btn-sm" onclick="removeCartItem(${idx})">&times;</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function removeCartItem(idx) {
+      try {
+        const res = await apiFetch(`/api/current/item/${idx}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Item removed.', 'warning');
+          renderCart(data.data);
+          fetchOverviewReports();
+        }
+      } catch (err) {
+        showToast('Error removing item: ' + err.message, 'error');
+      }
+    }
+
+    async function clearLiveCart() {
+      if (!confirm('Clear all items from live cart?')) return;
+      try {
+        const res = await apiFetch('/api/current/clear', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Cart cleared.', 'warning');
+          renderCart(data.data);
+          fetchOverviewReports();
+        }
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    // Rollover
+    function openRolloverModal() {
+      document.getElementById('rolloverModal').classList.add('active');
+    }
+    function closeRolloverModal() {
+      document.getElementById('rolloverModal').classList.remove('active');
+    }
+
+    async function executeRollover() {
+      closeRolloverModal();
+      showToast('Finalizing day & executing rollover...', 'warning');
+      try {
+        const res = await apiFetch('/api/rollover', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message, 'success');
+          refreshSales();
+          fetchDailyHistory();
+          fetchOverviewReports();
+          fetchStatus();
+        } else {
+          showToast(data.error || 'Rollover failed', 'error');
+        }
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    // --- EXPENSES MODULE ---
+    async function handleExpenseSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('expTitle').value.trim();
+      const category = document.getElementById('expCategory').value;
+      const amount = Number(document.getElementById('expAmount').value) || 0;
+      const notes = document.getElementById('expNotes').value.trim();
+
+      try {
+        const res = await apiFetch('/api/expenses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, category, amount, notes }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Expense saved: Rs ${amount.toLocaleString()}`, 'success');
+          document.getElementById('expTitle').value = '';
+          document.getElementById('expAmount').value = '';
+          document.getElementById('expNotes').value = '';
+          fetchExpenses();
+          fetchOverviewReports();
+        } else {
+          showToast(data.error || 'Failed', 'error');
+        }
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    async function fetchExpenses() {
+      try {
+        const res = await apiFetch('/api/expenses');
+        const data = await res.json();
+        if (data.success) {
+          renderExpenses(data.data || [], data.totalExpense || 0);
+        }
+      } catch (err) {
+        console.error('Expense error:', err);
+      }
+    }
+
+    function renderExpenses(list, total) {
+      document.getElementById('expenseTotalDisplay').textContent = `Rs ${total.toLocaleString()}`;
+      document.getElementById('kpiTodayExpenses').textContent = `Rs ${total.toLocaleString()}`;
+
+      const tbody = document.getElementById('expenseTableBody');
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="empty-state">No expenses recorded for today.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map((exp) => `
+        <tr>
+          <td>
+            <strong>${escapeHtml(exp.title)}</strong>
+            ${exp.notes ? `<div style="font-size: 0.72rem; color: var(--text-dim);">${escapeHtml(exp.notes)}</div>` : ''}
+          </td>
+          <td><span class="cat-badge cat-${exp.category}">${exp.category}</span></td>
+          <td style="text-align: right; font-weight: 700; color: var(--rose);">Rs ${Number(exp.amount).toLocaleString()}</td>
+          <td style="text-align: center;">
+            <button class="btn btn-danger btn-sm" onclick="deleteExpense('${exp._id}')">&times;</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function deleteExpense(id) {
+      if (!confirm('Delete this expense?')) return;
+      try {
+        const res = await apiFetch(`/api/expenses/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Expense deleted.', 'warning');
+          fetchExpenses();
+          fetchOverviewReports();
+        }
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    // --- UDHAAR / CREDIT LEDGER MODULE ---
+    async function fetchCreditLedger() {
+      try {
+        const res = await apiFetch('/api/credit');
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('ledgerTotalDebt').textContent = `Rs ${(data.totalOutstanding || 0).toLocaleString()}`;
+          document.getElementById('ledgerDebtorCount').textContent = `${data.activeDebtorsCount || 0} Customers`;
+          renderCreditCustomers(data.data || []);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderCreditCustomers(customers) {
+      const tbody = document.getElementById('creditTableBody');
+      if (customers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No customer credit records yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = customers.map(c => `
+        <tr>
+          <td>
+            <strong style="color: #FFF; font-size: 0.95rem;">${escapeHtml(c.name)}</strong>
+          </td>
+          <td style="color: var(--text-muted); font-size: 0.8rem;">${c.phone || '--'}</td>
+          <td style="text-align: right; font-weight: 800; font-family: 'Outfit'; font-size: 1.05rem; color: ${c.balance > 0 ? 'var(--amber)' : 'var(--emerald)'};">
+            Rs ${Number(c.balance || 0).toLocaleString()}
+          </td>
+          <td style="font-size: 0.78rem; color: var(--text-dim);">${escapeHtml(c.notes || '--')}</td>
+          <td style="text-align: center;">
+            <button class="btn btn-warning btn-sm" onclick="openTxModal('${c._id}', '${escapeHtml(c.name)}', 'credit')">
+              + Udhaar
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="openTxModal('${c._id}', '${escapeHtml(c.name)}', 'payment')">
+              + Vasooli
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="openStatementModal('${c._id}')">
+              📜 Ledger
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openAddCustomerModal() {
+      document.getElementById('addCustomerModal').classList.add('active');
+    }
+    function closeAddCustomerModal() {
+      document.getElementById('addCustomerModal').classList.remove('active');
+    }
+
+    async function handleAddCustomer(e) {
+      e.preventDefault();
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const initialBalance = Number(document.getElementById('custOpeningBalance').value) || 0;
+      const notes = document.getElementById('custNotes').value.trim();
+
+      try {
+        const res = await apiFetch('/api/credit/customer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, initialBalance, notes }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Customer ${name} added!`, 'success');
+          closeAddCustomerModal();
+          fetchCreditLedger();
+          fetchOverviewReports();
+        } else {
+          showToast(data.error || 'Failed', 'error');
+        }
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    function openTxModal(custId, name, type) {
+      document.getElementById('txCustomerId').value = custId;
+      document.getElementById('txType').value = type;
+      document.getElementById('txCustomerName').textContent = name;
+      document.getElementById('txModalTitle').innerHTML = type === 'credit'
+        ? `<span>🔴</span> Add Udhaar (Credit) for ${name}`
+        : `<span>🟢</span> Record Vasooli (Payment Received) from ${name}`;
+      document.getElementById('txSubmitBtn').textContent = type === 'credit' ? 'Add Udhaar' : 'Record Payment';
+      document.getElementById('txAmount').value = '';
+      document.getElementById('txDesc').value = type === 'credit' ? 'Bun Kababs on credit' : 'Cash repayment';
+      document.getElementById('txModal').classList.add('active');
+    }
+
+    function closeTxModal() {
+      document.getElementById('txModal').classList.remove('active');
+    }
+
+    async function handleTransactionSubmit(e) {
+      e.preventDefault();
+      const customerId = document.getElementById('txCustomerId').value;
+      const type = document.getElementById('txType').value;
+      const amount = Number(document.getElementById('txAmount').value) || 0;
+      const description = document.getElementById('txDesc').value.trim();
+
+      try {
+        const res = await apiFetch('/api/credit/transaction', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customerId, type, amount, description }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message, 'success');
+          closeTxModal();
+          fetchCreditLedger();
+          fetchOverviewReports();
+        } else {
+          showToast(data.error || 'Failed', 'error');
+        }
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    async function openStatementModal(custId) {
+      try {
+        const res = await apiFetch(`/api/credit/customer/${custId}`);
+        const data = await res.json();
+        if (data.success && data.data) {
+          const c = data.data;
+          document.getElementById('statementCustName').textContent = `${c.name} — Full Statement`;
+          document.getElementById('statementCurrentBalance').textContent = `Rs ${(c.balance || 0).toLocaleString()}`;
+
+          const tbody = document.getElementById('statementTableBody');
+          const txs = c.transactions || [];
+          if (txs.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="empty-state">No transactions recorded.</td></tr>`;
+          } else {
+            tbody.innerHTML = txs.map(t => `
+              <tr>
+                <td style="font-size: 0.78rem; color: var(--text-dim);">${t.date}</td>
+                <td>
+                  <span class="badge-sub" style="${t.type === 'credit' ? 'background: rgba(244,63,94,0.15); color: #FB7185; border-color: rgba(244,63,94,0.3);' : ''}">
+                    ${t.type === 'credit' ? 'Udhaar Diya' : 'Vasooli Li'}
+                  </span>
+                </td>
+                <td>${escapeHtml(t.description || '--')}</td>
+                <td style="text-align: right; font-weight: 700; color: ${t.type === 'credit' ? 'var(--rose)' : 'var(--emerald)'};">
+                  ${t.type === 'credit' ? '+' : '-'}Rs ${Number(t.amount).toLocaleString()}
+                </td>
+              </tr>
+            `).reverse().join('');
+          }
+          document.getElementById('statementModal').classList.add('active');
+        }
+      } catch (err) {
+        showToast('Error loading statement: ' + err.message, 'error');
+      }
+    }
+
+    function closeStatementModal() {
+      document.getElementById('statementModal').classList.remove('active');
+    }
+
+    // --- REPORTS MODULE ---
+    async function fetchOverviewReports() {
+      try {
+        const res = await apiFetch('/api/reports/financial-overview');
+        const data = await res.json();
+        if (data.success && data.overview) {
+          const o = data.overview;
+          document.getElementById('kpiTodayProfit').textContent = `Rs ${(o.todayNetProfit || 0).toLocaleString()}`;
+          document.getElementById('kpiAllTimeSales').textContent = `Rs ${(o.grandTotalSales || 0).toLocaleString()}`;
+          document.getElementById('kpiAllTimeExpenses').textContent = `Rs ${(o.totalExpensesLifetime || 0).toLocaleString()}`;
+          document.getElementById('kpiAllTimeProfit').textContent = `Rs ${(o.lifetimeNetProfit || 0).toLocaleString()}`;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      fetchDailyHistory();
+    }
+
+    async function fetchDailyHistory() {
+      try {
+        const res = await apiFetch('/api/daily');
+        const data = await res.json();
+        if (data.success) {
+          const list = data.data || [];
+          document.getElementById('kpiReportDays').textContent = `${list.length} Days`;
+          renderDailyHistory(list);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderDailyHistory(days) {
+      const tbody = document.getElementById('dailyReportTableBody');
+      if (days.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No archived days yet. Click "Seed Past Demo Days" to test.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = days.map(d => {
+        const itemsCount = (d.items || []).reduce((sum, i) => sum + (Number(i.quantity) || 0), 0);
+        return `
+          <tr>
+            <td><strong style="color: var(--cyan); font-family: 'Outfit'; font-size: 0.95rem;">${d.date}</strong></td>
+            <td><span class="badge-sub">${itemsCount} Kababs</span></td>
+            <td style="text-align: right; font-weight: 700; color: var(--emerald); font-size: 1rem;">
+              Rs ${Number(d.totalSale || 0).toLocaleString()}
+            </td>
+            <td style="font-size: 0.78rem; color: var(--text-dim);">${new Date(d.createdAt).toLocaleDateString()}</td>
+            <td style="text-align: center;">
+              <button class="btn btn-ghost btn-sm" onclick="viewDayDetails('${d.date}')">👁️ Items</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function viewDayDetails(date) {
+      try {
+        const res = await apiFetch(`/api/daily/${date}`);
+        const data = await res.json();
+        if (data.success && data.data) {
+          const d = data.data;
+          document.getElementById('detailDateTitle').textContent = `Breakdown for ${d.date}`;
+          document.getElementById('detailContent').innerHTML = `
+            <div style="background: rgba(0,0,0,0.3); padding: 0.75rem 1rem; border-radius: 12px; border: 1px solid var(--border); display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <span>Total Day Sale:</span>
+              <strong style="color: var(--emerald); font-size: 1.2rem; font-family: 'Outfit';">Rs ${Number(d.totalSale).toLocaleString()}</strong>
+            </div>
+            <div class="table-container" style="max-height: 250px;">
+              <table>
+                <thead>
+                  <tr><th>Item</th><th style="text-align: right;">Price</th><th style="text-align: center;">Qty</th><th style="text-align: right;">Total</th></tr>
+                </thead>
+                <tbody>
+                  ${(d.items || []).map(i => `
+                    <tr>
+                      <td><strong>${escapeHtml(i.name)}</strong></td>
+                      <td style="text-align: right; color: var(--text-muted);">Rs ${Number(i.price).toLocaleString()}</td>
+                      <td style="text-align: center;"><span class="badge-sub">${i.quantity}</span></td>
+                      <td style="text-align: right; font-weight: 700; color: var(--emerald);">Rs ${Number(i.total).toLocaleString()}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+          document.getElementById('detailModal').classList.add('active');
+        }
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+
+    async function seedDemoData() {
+      showToast('Seeding past demo days...', 'warning');
+      try {
+        const res = await apiFetch('/api/seed-demo', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message, 'success');
+          refreshSales();
+          fetchDailyHistory();
+          fetchOverviewReports();
+        }
+      } catch (e) {
+        showToast('Seed error: ' + e.message, 'error');
+      }
+    }
+
+    // --- SINGLE-DAY COMPLETE AUDIT REPORT BY DATE ---
+    function setAuditDate(preset) {
+      const today = new Date();
+      let target = new Date();
+
+      if (preset === 'yesterday') {
+        target.setDate(today.getDate() - 1);
+      } else if (preset === 'dayBefore') {
+        target.setDate(today.getDate() - 2);
+      }
+
+      const y = target.getFullYear();
+      const m = String(target.getMonth() + 1).padStart(2, '0');
+      const d = String(target.getDate()).padStart(2, '0');
+      const dateStr = `${y}-${m}-${d}`;
+      document.getElementById('auditDateInput').value = dateStr;
+      loadSingleDayReport();
+    }
+
+    async function loadSingleDayReport() {
+      let date = document.getElementById('auditDateInput').value;
+      if (!date) {
+        const today = new Date();
+        const y = today.getFullYear();
+        const m = String(today.getMonth() + 1).padStart(2, '0');
+        const d = String(today.getDate()).padStart(2, '0');
+        date = `${y}-${m}-${d}`;
+        document.getElementById('auditDateInput').value = date;
+      }
+
+      const container = document.getElementById('singleDayReportContent');
+      container.innerHTML = `<div style="text-align:center; padding: 2rem; color: var(--text-muted);">Loading complete business report for ${date}...</div>`;
+
+      try {
+        const res = await apiFetch(`/api/reports/daily-summary?date=${date}`);
+        const data = await res.json();
+
+        if (!data.success) {
+          container.innerHTML = `<div class="empty-state">Error loading report: ${data.error}</div>`;
+          return;
+        }
+
+        const s = data.summary || {};
+        const salesItems = (data.sales && data.sales.items) || [];
+        const expenses = data.expenses || [];
+        const creditTxs = data.creditTransactions || [];
+
+        const profitColor = (s.netProfit || 0) >= 0 ? 'var(--emerald)' : 'var(--rose)';
+        const profitSign = (s.netProfit || 0) >= 0 ? '+' : '';
+
+        container.innerHTML = `
+          <!-- Date Banner & Status -->
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Business Day Report</div>
+              <div style="font-family: 'Outfit'; font-size: 1.4rem; font-weight: 800; color: var(--cyan);">${data.businessDate}</div>
+            </div>
+            <div>
+              <span class="badge-sub" style="${data.isToday ? 'background: rgba(16,185,129,0.2); color: var(--emerald); border-color: rgba(16,185,129,0.4);' : 'background: rgba(99,102,241,0.2); color: var(--indigo); border-color: rgba(99,102,241,0.4);'}">
+                ${data.isToday ? '🟢 Today (Live Shift)' : '🔒 Finalized Business Day'}
+              </span>
+            </div>
+          </div>
+
+          <!-- 4 Financial Summary KPI Cards -->
+          <div class="kpi-row" style="margin-bottom: 1.25rem;">
+            <div class="kpi-card" style="border-color: rgba(16,185,129,0.3);">
+              <div class="kpi-icon" style="background: rgba(16,185,129,0.15); color: var(--emerald);">💰</div>
+              <div class="kpi-content">
+                <div class="kpi-label">Total Day Sales</div>
+                <div class="kpi-value" style="color: var(--emerald);">Rs ${Number(s.totalSales || 0).toLocaleString()}</div>
+                <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.15rem;">${s.itemsSold || 0} Kabab Pieces</div>
+              </div>
+            </div>
+
+            <div class="kpi-card" style="border-color: rgba(244,63,94,0.3);">
+              <div class="kpi-icon" style="background: rgba(244,63,94,0.15); color: var(--rose);">💸</div>
+              <div class="kpi-content">
+                <div class="kpi-label">Total Day Expenses</div>
+                <div class="kpi-value" style="color: var(--rose);">Rs ${Number(s.totalExpenses || 0).toLocaleString()}</div>
+                <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.15rem;">${expenses.length} Expense Items</div>
+              </div>
+            </div>
+
+            <div class="kpi-card" style="border-color: rgba(6,182,212,0.3);">
+              <div class="kpi-icon" style="background: rgba(6,182,212,0.15); color: var(--cyan);">💎</div>
+              <div class="kpi-content">
+                <div class="kpi-label">Net Profit / Loss</div>
+                <div class="kpi-value" style="color: ${profitColor};">${profitSign}Rs ${Number(s.netProfit || 0).toLocaleString()}</div>
+                <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.15rem;">Margin: ${s.profitMargin || 0}%</div>
+              </div>
+            </div>
+
+            <div class="kpi-card" style="border-color: rgba(245,158,11,0.3);">
+              <div class="kpi-icon" style="background: rgba(245,158,11,0.15); color: var(--amber);">💵</div>
+              <div class="kpi-content">
+                <div class="kpi-label">Net Cash In Hand</div>
+                <div class="kpi-value" style="color: var(--amber);">Rs ${Number(s.netCashInHand || 0).toLocaleString()}</div>
+                <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.15rem;">Sales - Udhaar + Vasooli - Expenses</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3 Itemized Breakdown Sections -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+            <!-- 1. Sales Breakdown -->
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 14px; padding: 1.15rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <strong style="font-size: 0.95rem; color: #FFF;">🍔 Kabab Sales Breakdown</strong>
+                <span class="badge-sub">Rs ${Number(s.totalSales || 0).toLocaleString()}</span>
+              </div>
+              <div class="table-container" style="max-height: 220px;">
+                <table>
+                  <thead>
+                    <tr><th>Item</th><th style="text-align:right;">Price</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Total</th></tr>
+                  </thead>
+                  <tbody>
+                    ${salesItems.length === 0 ? '<tr><td colspan="4" class="empty-state">No sales recorded on this date.</td></tr>' :
+                      salesItems.map(i => `
+                        <tr>
+                          <td><strong>${escapeHtml(i.name)}</strong></td>
+                          <td style="text-align:right; color: var(--text-muted);">Rs ${Number(i.price).toLocaleString()}</td>
+                          <td style="text-align:center;"><span class="badge-sub">${i.quantity}</span></td>
+                          <td style="text-align:right; font-weight:700; color:var(--emerald);">Rs ${Number(i.total).toLocaleString()}</td>
+                        </tr>
+                      `).join('')
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- 2. Expenses Breakdown -->
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 14px; padding: 1.15rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <strong style="font-size: 0.95rem; color: #FFF;">💸 Daily Expenses (Kharcha)</strong>
+                <span class="badge-sub" style="background: rgba(244,63,94,0.15); color: #FB7185; border-color: rgba(244,63,94,0.3);">Rs ${Number(s.totalExpenses || 0).toLocaleString()}</span>
+              </div>
+              <div class="table-container" style="max-height: 220px;">
+                <table>
+                  <thead>
+                    <tr><th>Title</th><th>Category</th><th style="text-align:right;">Amount</th></tr>
+                  </thead>
+                  <tbody>
+                    ${expenses.length === 0 ? '<tr><td colspan="3" class="empty-state">No expenses recorded on this date.</td></tr>' :
+                      expenses.map(e => `
+                        <tr>
+                          <td><strong>${escapeHtml(e.title)}</strong>${e.notes ? `<div style="font-size:0.72rem; color:var(--text-dim);">${escapeHtml(e.notes)}</div>` : ''}</td>
+                          <td><span class="cat-badge cat-${e.category}">${e.category}</span></td>
+                          <td style="text-align:right; font-weight:700; color:var(--rose);">Rs ${Number(e.amount).toLocaleString()}</td>
+                        </tr>
+                      `).join('')
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Udhaar & Vasooli Section -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 14px; padding: 1.15rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+              <strong style="font-size: 0.95rem; color: #FFF;">📖 Udhaar &amp; Vasooli Activity on this Date</strong>
+              <div style="display: flex; gap: 0.5rem;">
+                <span class="badge-sub" style="background: rgba(244,63,94,0.15); color: #FB7185;">Udhaar Diya: Rs ${Number(s.creditGiven || 0).toLocaleString()}</span>
+                <span class="badge-sub" style="background: rgba(16,185,129,0.15); color: var(--emerald);">Vasooli Li: Rs ${Number(s.vasooliCollected || 0).toLocaleString()}</span>
+              </div>
+            </div>
+            <div class="table-container" style="max-height: 180px;">
+              <table>
+                <thead>
+                  <tr><th>Customer Name</th><th>Type</th><th>Description</th><th style="text-align:right;">Amount</th></tr>
+                </thead>
+                <tbody>
+                  ${creditTxs.length === 0 ? '<tr><td colspan="4" class="empty-state">No Udhaar or Vasooli recorded on this date.</td></tr>' :
+                    creditTxs.map(t => `
+                      <tr>
+                        <td><strong>${escapeHtml(t.customerName)}</strong></td>
+                        <td><span class="badge-sub" style="${t.type === 'credit' ? 'background:rgba(244,63,94,0.15); color:#FB7185;' : ''}">${t.type === 'credit' ? 'Udhaar Diya' : 'Vasooli Li'}</span></td>
+                        <td>${escapeHtml(t.description || '--')}</td>
+                        <td style="text-align:right; font-weight:700; color: ${t.type === 'credit' ? 'var(--rose)' : 'var(--emerald)'};">
+                          ${t.type === 'credit' ? '+' : '-'}Rs ${Number(t.amount).toLocaleString()}
+                        </td>
+                      </tr>
+                    `).join('')
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state">Network error: ${err.message}</div>`;
+      }
+    }
+
+    function printSingleDayReport() {
+      window.print();
+    }
+
+    // --- MONGODB CONNECTION MODAL CONTROLS ---
+    function openMongoConfigModal() {
+      apiFetch('/api/status').then(r => r.json()).then(data => {
+        if (data.database && data.database.rawUri) {
+          document.getElementById('cfgMongoUri').value = data.database.rawUri;
+        }
+      }).catch(() => {});
+      document.getElementById('mongoModalFeedback').style.display = 'none';
+      document.getElementById('mongoConfigModal').classList.add('active');
+    }
+
+    function closeMongoConfigModal() {
+      document.getElementById('mongoConfigModal').classList.remove('active');
+    }
+
+    function setMongoPreset(type) {
+      const input = document.getElementById('cfgMongoUri');
+      if (type === 'local_auth') {
+        input.value = 'mongodb://USERNAME:PASSWORD@localhost:27017/salesDB?authSource=admin';
+      } else if (type === 'local_noauth') {
+        input.value = 'mongodb://localhost:27017/salesDB';
+      } else if (type === 'atlas') {
+        input.value = 'mongodb+srv://USERNAME:PASSWORD@cluster0.xxxxx.mongodb.net/salesDB?retryWrites=true&w=majority';
+      }
+      input.focus();
+    }
+
+    async function handleMongoConfigSubmit(e) {
+      e.preventDefault();
+      const uri = document.getElementById('cfgMongoUri').value.trim();
+      const fb = document.getElementById('mongoModalFeedback');
+      const btn = document.getElementById('btnSaveMongo');
+
+      btn.disabled = true;
+      btn.textContent = 'Connecting...';
+      fb.style.display = 'block';
+      fb.style.background = 'rgba(245, 158, 11, 0.15)';
+      fb.style.color = 'var(--amber)';
+      fb.innerHTML = 'Testing connection to MongoDB...';
+
+      try {
+        const res = await apiFetch('/api/db/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uri }),
+        });
+        const data = await res.json();
+
+        if (data.status === 'connected') {
+          fb.style.background = 'rgba(16, 185, 129, 0.15)';
+          fb.style.color = 'var(--emerald)';
+          fb.innerHTML = '✅ Successfully connected to MongoDB and saved to .env!';
+          showToast('Connected to MongoDB!', 'success');
+          setTimeout(() => {
+            closeMongoConfigModal();
+            fetchStatus();
+            initData();
+          }, 1200);
+        } else {
+          fb.style.background = 'rgba(244, 63, 94, 0.15)';
+          fb.style.color = '#FB7185';
+          fb.innerHTML = `❌ Connection failed: ${data.error || 'Check username, password and host'}`;
+          showToast('MongoDB connection failed', 'error');
+        }
+      } catch (err) {
+        fb.style.background = 'rgba(244, 63, 94, 0.15)';
+        fb.style.color = '#FB7185';
+        fb.innerHTML = `❌ Network Error: ${err.message}`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '⚡ Connect & Save';
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function initData() {
+      fetchStatus();
+      refreshSales();
+      fetchExpenses();
+      fetchCreditLedger();
+      fetchOverviewReports();
+      calcSalePreview();
+      setAuditDate('today');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+      if (authToken) {
+        initData();
+      }
+      setInterval(fetchStatus, 20000);
+    });
+  </script>
+</body>
+</html>

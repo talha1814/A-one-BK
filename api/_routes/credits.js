@@ -1,7 +1,7 @@
 import express from 'express';
-import Credit from '../models/Credit.js';
-import { requireAuth, getTenantClientId } from '../middleware/auth.js';
-import { getBusinessDate } from '../utils/getBusinessDate.js';
+import Credit from '../_models/Credit.js';
+import { requireAuth, getTenantClientId } from '../_middleware/auth.js';
+import { getBusinessDate } from '../_utils/getBusinessDate.js';
 
 export const creditRouter = express.Router();
 

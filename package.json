@@ -11,9 +11,9 @@
     "esbuild@*": true
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "node api.js && vite",
     "server": "node backend/server.js",
-    "start": "node backend/server.js",
+    "start": "node api.js && node backend/server.js",
     "build": "vite build",
     "preview": "vite preview"
   },

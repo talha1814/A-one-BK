@@ -1,12 +1,12 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import User from '../models/User.js';
-import Sale from '../models/Sale.js';
-import Expense from '../models/Expense.js';
-import Credit from '../models/Credit.js';
-import DailySale from '../models/DailySale.js';
-import { requireAuth, requireAdmin } from '../middleware/auth.js';
-import { getBusinessDate, getYesterdayBusinessDate } from '../utils/getBusinessDate.js';
+import User from '../_models/User.js';
+import Sale from '../_models/Sale.js';
+import Expense from '../_models/Expense.js';
+import Credit from '../_models/Credit.js';
+import DailySale from '../_models/DailySale.js';
+import { requireAuth, requireAdmin } from '../_middleware/auth.js';
+import { getBusinessDate, getYesterdayBusinessDate } from '../_utils/getBusinessDate.js';
 
 export const adminRouter = express.Router();
 

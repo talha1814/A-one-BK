@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import User from '../_models/User.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'aone_bunkabab_super_secret_jwt_token_key_2026_xyz987';
 

@@ -1,7 +1,7 @@
 import express from 'express';
-import Expense from '../models/Expense.js';
-import { requireAuth, getTenantClientId } from '../middleware/auth.js';
-import { getBusinessDate } from '../utils/getBusinessDate.js';
+import Expense from '../_models/Expense.js';
+import { requireAuth, getTenantClientId } from '../_middleware/auth.js';
+import { getBusinessDate } from '../_utils/getBusinessDate.js';
 
 export const expenseRouter = express.Router();
 

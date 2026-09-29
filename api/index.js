@@ -1,14 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { connectDB } from './lib/mongodb.js';
-import { authRouter, seedInitialUsersAndProducts } from './routes/auth.js';
-import { productRouter } from './routes/products.js';
-import { salesRouter } from './routes/sales.js';
-import { expenseRouter } from './routes/expenses.js';
-import { creditRouter } from './routes/credits.js';
-import { adminRouter } from './routes/admin.js';
-import { cronRouter } from './routes/cron.js';
+import { connectDB } from './_lib/mongodb.js';
+import { authRouter, seedInitialUsersAndProducts } from './_routes/auth.js';
+import { productRouter } from './_routes/products.js';
+import { salesRouter } from './_routes/sales.js';
+import { expenseRouter } from './_routes/expenses.js';
+import { creditRouter } from './_routes/credits.js';
+import { adminRouter } from './_routes/admin.js';
+import { cronRouter } from './_routes/cron.js';
 
 dotenv.config();
 

@@ -2,9 +2,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import app from '../api/index.js';
-import { connectDB } from '../api/lib/mongodb.js';
-import { seedInitialUsersAndProducts } from '../api/routes/auth.js';
-import { getBusinessDate } from '../api/utils/getBusinessDate.js';
+import { connectDB } from '../api/_lib/mongodb.js';
+import { seedInitialUsersAndProducts } from '../api/_routes/auth.js';
+import { getBusinessDate } from '../api/_utils/getBusinessDate.js';
 
 const PORT = process.env.PORT || 5000;
 

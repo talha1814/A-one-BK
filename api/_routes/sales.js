@@ -1,9 +1,9 @@
 import express from 'express';
-import Sale from '../models/Sale.js';
-import Expense from '../models/Expense.js';
-import Credit from '../models/Credit.js';
-import { requireAuth, getTenantClientId } from '../middleware/auth.js';
-import { getBusinessDate, getYesterdayBusinessDate } from '../utils/getBusinessDate.js';
+import Sale from '../_models/Sale.js';
+import Expense from '../_models/Expense.js';
+import Credit from '../_models/Credit.js';
+import { requireAuth, getTenantClientId } from '../_middleware/auth.js';
+import { getBusinessDate, getYesterdayBusinessDate } from '../_utils/getBusinessDate.js';
 
 export const salesRouter = express.Router();
 

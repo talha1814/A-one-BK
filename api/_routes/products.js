@@ -1,6 +1,6 @@
 import express from 'express';
-import Product from '../models/Product.js';
-import { requireAuth, getTenantClientId } from '../middleware/auth.js';
+import Product from '../_models/Product.js';
+import { requireAuth, getTenantClientId } from '../_middleware/auth.js';
 
 export const productRouter = express.Router();
 

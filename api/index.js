@@ -1,9 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
 import { connectDB } from './lib/mongodb.js';
 import { authRouter, seedInitialUsersAndProducts } from './routes/auth.js';
 import { productRouter } from './routes/products.js';
@@ -14,10 +11,6 @@ import { adminRouter } from './routes/admin.js';
 import { cronRouter } from './routes/cron.js';
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const distDir = path.resolve(__dirname, '..', 'dist');
 
 const app = express();
 
@@ -73,16 +66,10 @@ app.use('/api/admin', adminRouter);
 app.use('/api/cron', cronRouter);
 app.use('/api/rollover', cronRouter); // Alias for rollover
 
-// Serve built frontend assets when running locally with Express
-if (fs.existsSync(distDir)) {
-  app.use(express.static(distDir));
-  app.use((req, res, next) => {
-    if (req.path.startsWith('/api')) {
-      return res.status(404).json({ success: false, error: `API route ${req.path} not found.` });
-    }
-    res.sendFile(path.join(distDir, 'index.html'));
-  });
-}
+// 404 handler for unmatched /api routes
+app.use('/api', (req, res) => {
+  res.status(404).json({ success: false, error: `API route ${req.originalUrl || req.url} not found.` });
+});
 
 // Global error handler
 app.use((err, req, res, next) => {
